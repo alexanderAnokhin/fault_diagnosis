@@ -35,8 +35,7 @@ balance <- function(data, method = c("rus", "ros", "b"), uRate = 0, oRate = 0, r
            add = nrow(min)*oRate
            maj = maj[-sample(nrow(maj), rem, replace = F),]
            min = rbind(min, min[sample(nrow(min), add, replace = T),])                       
-         },
-         stop("Invalid method"))
+         })
   
   data = list(maj, min)
   return(data)
