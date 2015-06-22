@@ -1,6 +1,7 @@
 setwd("~/Documents/Uni_Munster/DA in Spare Parts Management/fault_diagnosis")
 
 library(ggplot2)
+library(PerformanceAnalytics)
 library(fastICA)
 library(mlr)
 library(kernlab)
@@ -16,6 +17,24 @@ folds <- 20
 ## Perform visual inspection of classes. Only "Normal 1" is taken into account,
 ## because it is only one scenario without load.
 ## 
+
+## Feature plot for one sensor
+png(filename="images/featureInspection1.png", width = 600, height = 600)
+chart.Correlation(faults[, 3:6]
+                  , pch="."
+                  , col="lightblue"
+                  , labels=c("mean", "std.", "max", "root mean square")
+                  , main="Features of Sensor 1")
+dev.off()
+
+## Feature plot for different sensors
+png(filename="images/featureInspection2.png", width = 600, height = 600)
+chart.Correlation(faults[, c(4, 11, 18)]
+                  , pch="."
+                  , col="lightblue"
+                  , labels=c("sensor 1", "sensor 2", "sensor 3")
+                  , main="Std. of Signals for Different Sensors")
+dev.off()
 
 ## First plot
 png(filename="images/visualInspection1.png", width = 600, height = 600)
