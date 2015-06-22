@@ -16,7 +16,7 @@ seconds <- 5
 ## Transform data
 f.1 <- tbl_df(failure_1) %>%
   group_by(cycle) %>%
-  mutate(split = 1:n() %/% 2048*seconds) %>%
+  mutate(split = 1:n() %/% (2048*seconds)) %>%
   group_by(cycle, split) %>%
   summarise(s1.mean = mean(sensor_1)
             , s1.sd = sd(sensor_1)
@@ -45,7 +45,7 @@ f.1 <- tbl_df(failure_1) %>%
 
 f.2 <- tbl_df(failure_2) %>%
   group_by(cycle) %>%
-  mutate(split = 1:n() %/% 2048*seconds) %>%
+  mutate(split = 1:n() %/% (2048*seconds)) %>%
   group_by(cycle, split) %>%
   summarise(s1.mean = mean(sensor_1)
             , s1.sd = sd(sensor_1)
@@ -74,7 +74,7 @@ f.2 <- tbl_df(failure_2) %>%
 
 f.3 <- tbl_df(failure_3) %>%
   group_by(cycle) %>%
-  mutate(split = 1:n() %/% 2048*seconds) %>%
+  mutate(split = 1:n() %/% (2048*seconds)) %>%
   group_by(cycle, split) %>%
   summarise(s1.mean = mean(sensor_1)
             , s1.sd = sd(sensor_1)
@@ -103,7 +103,7 @@ f.3 <- tbl_df(failure_3) %>%
 
 n.1 <- tbl_df(normal_1) %>%
   group_by(cycle) %>%
-  mutate(split = 1:n() %/% 2048*seconds) %>%
+  mutate(split = 1:n() %/% (2048*seconds)) %>%
   group_by(cycle, split) %>%
   summarise(s1.mean = mean(sensor_1)
             , s1.sd = sd(sensor_1)
@@ -132,7 +132,7 @@ n.1 <- tbl_df(normal_1) %>%
 
 n.2 <- tbl_df(normal_2) %>%
   group_by(cycle) %>%
-  mutate(split = 1:n() %/% 2048*seconds) %>%
+  mutate(split = 1:n() %/% (2048*seconds)) %>%
   group_by(cycle, split) %>%
   summarise(s1.mean = mean(sensor_1)
             , s1.sd = sd(sensor_1)
@@ -161,7 +161,7 @@ n.2 <- tbl_df(normal_2) %>%
 
 n.3 <- tbl_df(normal_3) %>%
   group_by(cycle) %>%
-  mutate(split = 1:n() %/% 2048*seconds) %>%
+  mutate(split = 1:n() %/% (2048*seconds)) %>%
   group_by(cycle, split) %>%
   summarise(s1.mean = mean(sensor_1)
             , s1.sd = sd(sensor_1)
