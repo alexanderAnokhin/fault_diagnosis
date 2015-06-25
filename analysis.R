@@ -6,7 +6,6 @@ library(fastICA)
 library(mlr)
 library(kernlab)
 library(pso)
-library(ROCR)
 
 ## Load transformed data
 source("load.R")
