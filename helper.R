@@ -23,5 +23,18 @@ f.cv <- function(x) {
     2*(p*r)/(p+r)
   })
   
-  return(mean(res))
+  return(res)
+}
+
+gmean.cv <- function(x) {
+  pred <- x[[1]]
+  lab <- x[[2]]
+  res <- sapply(1:length(pred), function(i) {
+    m <- table(pred[[i]], lab[[i]])
+    tpr <- m[1, 1]/sum(m[1, ])
+    tnr <- m[2, 2]/sum(m[2, ])
+    sqrt(tpr*tnr)
+  })
+  
+  return(res)
 }
