@@ -30,7 +30,7 @@ ros <- function(data, n, rate = 0){
 # oRate oversampling rate
 # ratio ratio of majority:minority
 
-balance <- function(data, method = c("rus", "ros", "b"), technique = list('under' = rus, 'over' = ros), uRate = 0, oRate = 0, ratio = 1){
+balance <- function(data, method = c("u", "o", "b"), technique = list('under' = rus, 'over' = ros), uRate = 0, oRate = 0, ratio = 1){
   method = match.arg(method)
   under = technique$under
   over = technique$over
@@ -48,11 +48,11 @@ balance <- function(data, method = c("rus", "ros", "b"), technique = list('under
   add = nrow(min)*oRate
     
   switch(method,
-         rus = {
+         u = {
            if(uRate == 0) {rem = nrow(maj) - (ratio*nrow(min))}
            maj = under(maj, rem)
          },
-         ros = {
+         o = {
            if(oRate == 0) {add = nrow(maj)/ratio - nrow(min)}
            min = over(min, add)
          },
@@ -62,7 +62,7 @@ balance <- function(data, method = c("rus", "ros", "b"), technique = list('under
            min = over(min, rate = oRate)                       
          })
   
-  data = list(maj, min)
+  data = list(min, maj)
   return(data)
 }
 
