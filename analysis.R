@@ -200,12 +200,15 @@ binary.data <- list(f1.n1, f2.n1, f3.n1)
 names(binary.data) <- c('f1.n1', 'f2.n1', 'f3.n1')
 
 ## Cross-validation error
+## Random Oversampling (lowest mean of cross-validation error)
 cross.comp <- matrix(unlist(lapply(binary.svm, function(x) x@cross)), ncol = 3, byrow = T)
 rownames(cross.comp) <- c("f1.n1", "f2.n1", "f3.n1")
 colnames(cross.comp) <- c("original", "ros", "rus")
+which(min(colMeans(cross.comp)) == colMeans(cross.comp))
 
 ## F-Measure
 ## From single confusion matrices
+## Original and Random Oversampling are tied (highest mean of F-Measure)
 fm.comp <- matrix(apply(cbind(1:9, rep(1:3, each = 3)), 1, function(x) {
   m <- table(predict(binary.svm[[x[1]]], as.matrix(binary.data[[x[2]]][, -c(1,2,24)])), binary.data[[x[2]]]$fault)
   p <- m[1, 1]/sum(m[1, ])
@@ -215,6 +218,7 @@ fm.comp <- matrix(apply(cbind(1:9, rep(1:3, each = 3)), 1, function(x) {
 
 rownames(fm.comp) <- c("f1.n1", "f2.n1", "f3.n1")
 colnames(fm.comp) <- c("original", "ros", "rus")
+which(max(colMeans(fm.comp)) == colMeans(fm.comp))
 
 ## Using cv.ksvm and f.cv functions----
 f1.n1 <- rbind(f.1, n.1)
@@ -295,18 +299,22 @@ p31.ros <- cv.ksvm(x=as.matrix(f3.n1[, -c(1, 2, 24)])
                 
 rm(f1.n1); rm(f2.n1); rm(f3.n1)
 
-# F-Measure Alternative
+## F-Measure Alternative
+## Random Oversampling (highest mean of F-Measure)
 binary.cv.svm <- list(p11.notbalanced, p11.ros, p11.rus, p21.notbalanced, p21.ros, p21.rus, p31.notbalanced, p31.ros, p31.rus)
 names(binary.cv.svm) <- c('f1.n1.notbalanced', 'f1.n1.ros', 'f1.n1.rus', 'f2.n1.notbalanced', 'f2.n1.ros', 'f2.n1.rus', 'f3.n1.notbalanced', 'f3.n1.ros', 'f3.n1.rus')
 
 fm.cv.comp <- matrix(unlist(lapply(binary.cv.svm, f.cv)), ncol = 3, byrow = T)
 rownames(fm.cv.comp) <- c("f1.n1", "f2.n1", "f3.n1")
 colnames(fm.cv.comp) <- c("original", "ros", "rus")
+which(max(colMeans(fm.cv.comp)) == colMeans(fm.cv.comp))
 
 ## Part 3----
 ## Fit SVM with default settings on all classes, then balance/weight
 ## data and compare results (choose best balance technique)
 ##
+
+all.list <- list(f.1, f.2, f.3, n.1, n.2, n.3)
 
 ## not balanced fits
 fit.notbalanced <- ksvm(x=as.matrix(faults[, -c(1, 2, 24)])
@@ -315,11 +323,41 @@ fit.notbalanced <- ksvm(x=as.matrix(faults[, -c(1, 2, 24)])
                         , kernel='rbfdot'
                         , cross = folds)
 
-## TODO: balanced fits
+## SMean resampling
+f.smean <- balance.multi(data = all.list, method = "smean", technique = list('under' = rus, 'over' = ros))
+f.smean <- do.call(rbind.data.frame, f.smean)
+fit.smean <- ksvm(x=as.matrix(f.smean[, -c(1, 2, 24)])
+                        , y=f.smean$fault
+                        , type="C-svc"
+                        , kernel='rbfdot'
+                        , cross = folds)
 
-## TODO: weighted fits Hint: use class.weights parameter
+## SMedian resampling
+f.smedian <- balance.multi(data = all.list, method = "smedian", technique = list('under' = rus, 'over' = ros))
+f.smedian <- do.call(rbind.data.frame, f.smedian)
+fit.smedian <- ksvm(x=as.matrix(f.smedian[, -c(1, 2, 24)])
+                  , y=f.smedian$fault
+                  , type="C-svc"
+                  , kernel='rbfdot'
+                  , cross = folds)
 
-## TODO: comparison
+## Naive weights
+weight <- 1/(sapply(all.list, nrow)/sum(sapply(all.list, nrow)))
+fit.weighted <- ksvm(x=as.matrix(faults[, -c(1, 2, 24)])
+                     , y=faults$fault
+                     , type="C-svc"
+                     , kernel='rbfdot'
+                     , cross = folds
+                     , class.weight = weight)
+
+## Comparison
+multi.svm <- list(fit.notbalanced, fit.smean, fit.smedian, fit.weighted)
+names(multi.svm) <- c('notbalanced', 'smean', 'smedian', 'weighted')
+
+## Cross-validation error
+## SMean resampling (lowest mean of cross-validation error)
+multi.cross.comp <- unlist(lapply(multi.svm, function(x) x@cross))
+which(multi.cross.comp == min(multi.cross.comp))
 
 ## Part 4
 ## Fit SVM with different kernels (maybe implementations) 

@@ -79,7 +79,7 @@ balance.multi <- function(data, method = c("smean", "smedian"), technique = list
   
   switch(method,
          smean = {
-           m = mean(unlist(lapply(data, nrow)))
+           m = ceiling(mean(sapply(data, nrow)))
            data = lapply(data, function(x){
              d = nrow(x) - m
              if(d > 0){
