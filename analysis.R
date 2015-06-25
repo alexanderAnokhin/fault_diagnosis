@@ -12,6 +12,7 @@ source("load.R")
 
 ## Load resampling functions
 source("balance.R")
+source("helper.R")
 
 ## Set number of folds for cross-validation
 folds <- 20
