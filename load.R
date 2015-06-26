@@ -14,7 +14,7 @@ load("data/normal_3.RData")
 seconds <- 5
 
 ## Persentage to be considered
-q <- .05
+q <- .01
 
 ## Transform data
 f.1 <- tbl_df(failure_1) %>%
