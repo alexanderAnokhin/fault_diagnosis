@@ -131,7 +131,7 @@ which(min(rowMeans(cross.comp)) == rowMeans(cross.comp))
 
 ## F-Measure
 ## From single confusion matrices
-## Original and Random Oversampling are tied (highest mean of F-Measure)
+## Original, OSS, ENN, and Tomek are tied (highest mean of F-Measure)
 fm.comp <- sapply(1:3, function(x) {
   unlist(lapply(binary.svm[[x]], function(y) {
     m <- table(predict(y, as.matrix(binary.data[[x]][, -22])), binary.data[[x]][, 22])
