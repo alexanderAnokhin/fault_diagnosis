@@ -119,7 +119,7 @@ names(binary.svm) <- c('f1.n1', 'f2.n1', 'f3.n1')
 ## Comparison
 
 ## Cross-validation error
-## Random Oversampling (lowest mean of cross-validation error)
+## SMOTE (lowest mean of cross-validation error)
 cross.comp <- matrix(
   unlist(lapply(binary.svm, function(x) 
     unlist(lapply(x, function(y) 
@@ -132,16 +132,17 @@ which(min(rowMeans(cross.comp)) == rowMeans(cross.comp))
 ## F-Measure
 ## From single confusion matrices
 ## Original and Random Oversampling are tied (highest mean of F-Measure)
-fm.comp <- matrix(apply(cbind(1:9, rep(1:3, each = 3)), 1, function(x) {
-  m <- table(predict(binary.svm[[x[1]]], as.matrix(binary.data[[x[2]]][, -c(1,2,24)])), binary.data[[x[2]]]$fault)
-  p <- m[1, 1]/sum(m[1, ])
-  r <- m[1, 1]/sum(m[, 1])
-  2*(p*r)/(p+r)
-}), nrow = 3, ncol = 3, byrow = T)
-
-rownames(fm.comp) <- c("f1.n1", "f2.n1", "f3.n1")
-colnames(fm.comp) <- c("original", "ros", "rus")
-which(max(colMeans(fm.comp)) == colMeans(fm.comp))
+fm.comp <- sapply(1:3, function(x) {
+  unlist(lapply(binary.svm[[x]], function(y) {
+    m <- table(predict(y, as.matrix(binary.data[[x]][, -22])), binary.data[[x]][, 22])
+    p <- m[1, 1]/sum(m[1, ])
+    r <- m[1, 1]/sum(m[, 1])
+    2*(p*r)/(p+r)
+  }))
+})
+colnames(fm.comp) <- c("f1.n1", "f2.n1", "f3.n1")
+rownames(fm.comp) <- names(binary.svm[[1]])
+which(max(rowMeans(fm.comp)) == rowMeans(fm.comp))
 
 ## Part 3----
 ## Fit SVM with default settings on all classes, then balance/weight
