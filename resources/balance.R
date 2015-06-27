@@ -5,10 +5,9 @@
 # rate undersampling rate
 
 rus <- function(x, y, n, rate = 0){
-  data = cbind(x, y)
+  data = cbind(x, 'fault' = y)
   if(missing(n)) {n = nrow(data)*rate}
   data = data[-sample(nrow(data), n, replace = F),]
-  colnames(data)[ncol(data)] = 'fault'
   
   return(data)
 }
@@ -20,11 +19,10 @@ rus <- function(x, y, n, rate = 0){
 # rate oversampling rate
 
 ros <- function(x, y, n, rate = 0){
-  data = cbind(x, y)
+  data = cbind(x, 'fault' = y)
   if(missing(n)) {n = nrow(data)*rate}
   data = rbind(data, data[sample(nrow(data), n, replace = T),])
-  colnames(data)[ncol(data)] = 'fault'
-  
+    
   return(data)
 }
 
@@ -35,11 +33,17 @@ ros <- function(x, y, n, rate = 0){
 # n number of instances to add
 # rate oversampling rate
 
-cbus <- function(data, n, rate = 0) {
-  if(missing(n)) {n = nrow(data)*rate}
-  target.size = nrow(data) - n
-  k = nrow(data)/target.size
-  clust = kmeans(data, k)
+cbus <- function(x, y, n, rate = 0) {
+  if(missing(n)) {n = nrow(x)*rate}
+  target.size = nrow(x) - n
+  k = nrow(x)/target.size
+  clust = kmeans(x, k)
+  ind = ncol(x)
+  temp = cbind(x, 'fault' = y, 'cluster' = clust$cluster)
+  rtemp = nrow(temp)
+  for(i in clust$size) {
+     n = target.size*i/nrow(x)
+  }
 }
 
 # balance the distributions between two classes

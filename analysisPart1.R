@@ -1,3 +1,9 @@
+library(unbalanced)
+library(ggplot2)
+library(mlr)
+library(kernlab)
+library(pso)
+
 ## Set random seed
 set.seed(20150626)
 
@@ -19,101 +25,109 @@ folds <- 20
 ## data and compare results (choose best balance technique)
 ##
 
-## not balanced fits
+## Set data
 f1.n1 <- rbind(f.1, n.1)
-f1.n1.notbalanced <- ksvm(x=as.matrix(f1.n1[, -c(1, 2, 24)])
-                          , y=f1.n1$fault
-                          , type="C-svc"
-                          , kernel='rbfdot'
-                          , cross = folds)
-
+levels(f1.n1$fault) <- c(1, 0)
 f2.n1 <- rbind(f.2, n.1)
-f2.n1.notbalanced <- ksvm(x=as.matrix(f2.n1[, -c(1, 2, 24)])
-                          , y=f2.n1$fault
-                          , type="C-svc"
-                          , kernel='rbfdot'
-                          , cross = folds)
-
+levels(f2.n1$fault) <- c(1, 0)
 f3.n1 <- rbind(f.3, n.1)
-f3.n1.notbalanced <- ksvm(x=as.matrix(f3.n1[, -c(1, 2, 24)])
-                          , y=f3.n1$fault
-                          , type="C-svc"
-                          , kernel='rbfdot'
-                          , cross = folds)
+levels(f3.n1$fault) <- c(1, 0)
 
-rm(f1.n1); rm(f2.n1); rm(f3.n1)
+binary.data <- list(f1.n1[, -c(1, 2)], f2.n1[, -c(1, 2)], f3.n1[, -c(1, 2)])
+names(binary.data) <- c('f1.n1', 'f2.n1', 'f3.n1')
 
-## Random Oversampling
-f1.n1 <- balance(data = list(f.1[, -c(1,2)], n.1[, -c(1,2)]), method = 'o', technique = list('under' = NULL, 'over' = ros))
-f1.n1 <- rbind(f1.n1[[1]], f1.n1[[2]])
-f1.n1.ros <- ksvm(x=as.matrix(f1.n1[, -22])
-                  , y=f1.n1$fault
-                  , type="C-svc"
-                  , kernel='rbfdot'
+## Train classifiers
+binary.svm <- lapply(binary.data, function(x) {
+  res <- list()
+  
+  # Original
+  res$ori <- ksvm(x = as.matrix(x[, -22])
+                  , y = x[, 22]
+                  , type = "C-svc"
+                  , kernel = 'rbfdot'
                   , cross = folds)
-
-f2.n1 <- balance(data = list(f.2[, -c(1,2)], n.1[, -c(1,2)]), method = 'o', technique = list('under' = NULL, 'over' = ros))
-f2.n1 <- rbind(f2.n1[[1]], f2.n1[[2]])
-f2.n1.ros <- ksvm(x=as.matrix(f2.n1[, -22])
-                  , y=f2.n1$fault
-                  , type="C-svc"
-                  , kernel='rbfdot'
+  
+  # Random oversampling
+  data <- ubOver(X = x[, -22], Y = x[, 22], k = 0)
+  res$ros <- ksvm(x = as.matrix(data$X)
+                  , y = data$Y
+                  , type = "C-svc"
+                  , kernel = 'rbfdot'
                   , cross = folds)
-
-f3.n1 <- balance(data = list(f.3[, -c(1,2)], n.1[, -c(1,2)]), method = 'o', technique = list('under' = NULL, 'over' = ros))
-f3.n1 <- rbind(f3.n1[[1]], f3.n1[[2]])
-f3.n1.ros <- ksvm(x=as.matrix(f3.n1[, -22])
-                  , y=f3.n1$fault
-                  , type="C-svc"
-                  , kernel='rbfdot'
+  
+  # Synthetic minority over-sampling technique
+  data <- ubSMOTE(X = x[, -22], Y = x[, 22], k = 5, perc.over = 200, perc.under = 200) 
+  res$smo <- ksvm(x = as.matrix(data$X)
+                  , y = data$Y
+                  , type = "C-svc"
+                  , kernel = 'rbfdot'
                   , cross = folds)
-
-rm(f1.n1); rm(f2.n1); rm(f3.n1)
-
-## Random Undersampling
-f1.n1 <- balance(data = list(f.1[, -c(1,2)], n.1[, -c(1,2)]), method = 'u', technique = list('under' = rus, 'over' = NULL))
-f1.n1 <- rbind(f1.n1[[1]], f1.n1[[2]])
-f1.n1.rus <- ksvm(x=as.matrix(f1.n1[, -22])
-                  , y=f1.n1$fault
-                  , type="C-svc"
-                  , kernel='rbfdot'
+  
+  # Random undersampling
+  data <- ubUnder(X = x[, -22], Y = x[, 22], propMinClass = 50) 
+  res$rus <- ksvm(x = as.matrix(data$X)
+                  , y = data$Y
+                  , type = "C-svc"
+                  , kernel = 'rbfdot'
                   , cross = folds)
-
-f2.n1 <- balance(data = list(f.2[, -c(1,2)], n.1[, -c(1,2)]), method = 'u', technique = list('under' = rus, 'over' = NULL))
-f2.n1 <- rbind(f2.n1[[1]], f2.n1[[2]])
-f2.n1.rus <- ksvm(x=as.matrix(f2.n1[, -22])
-                  , y=f2.n1$fault
-                  , type="C-svc"
-                  , kernel='rbfdot'
+  
+  # One-sided sampling
+  data <- ubOSS(X = x[, -22], Y = x[, 22]) 
+  res$oss <- ksvm(x = as.matrix(data$X)
+                  , y = data$Y
+                  , type = "C-svc"
+                  , kernel = 'rbfdot'
                   , cross = folds)
-
-f3.n1 <- balance(data = list(f.3[, -c(1,2)], n.1[, -c(1,2)]), method = 'u', technique = list('under' = rus, 'over' = NULL))
-f3.n1 <- rbind(f3.n1[[1]], f3.n1[[2]])
-f3.n1.rus <- ksvm(x=as.matrix(f3.n1[, -22])
-                  , y=f3.n1$fault
-                  , type="C-svc"
-                  , kernel='rbfdot'
+  
+  # Condensed nearest neighbours
+  data <- ubCNN(X = x[, -22], Y = x[, 22], k = 1) 
+  res$cnn <- ksvm(x = as.matrix(data$X)
+                  , y = data$Y
+                  , type = "C-svc"
+                  , kernel = 'rbfdot'
                   , cross = folds)
+  
+  # Edited nearest neighbours
+  data <- ubENN(X = x[, -22], Y = x[, 22], k = 3) 
+  res$enn <- ksvm(x = as.matrix(data$X)
+                  , y = data$Y
+                  , type = "C-svc"
+                  , kernel = 'rbfdot'
+                  , cross = folds)
+  
+  # Neighbourhood cleaning rule
+  data <- ubNCL(X = x[, -22], Y = x[, 22], k = 3) 
+  res$ncl <- ksvm(x = as.matrix(data$X)
+                  , y = data$Y
+                  , type = "C-svc"
+                  , kernel = 'rbfdot'
+                  , cross = folds)
+  
+  # Tomek link
+  data <- ubTomek(X = x[, -22], Y = x[, 22]) 
+  res$tom <- ksvm(x = as.matrix(data$X)
+                  , y = data$Y
+                  , type = "C-svc"
+                  , kernel = 'rbfdot'
+                  , cross = folds)
+  
+  return(res)
+})
 
-rm(f1.n1); rm(f2.n1); rm(f3.n1)
+names(binary.svm) <- c('f1.n1', 'f2.n1', 'f3.n1')
 
 ## Comparison
-binary.svm <- list(f1.n1.notbalanced, f1.n1.ros, f1.n1.rus, f2.n1.notbalanced, f2.n1.ros, f2.n1.rus, f3.n1.notbalanced, f3.n1.ros, f3.n1.rus)
-names(binary.svm) <- c('f1.n1.notbalanced', 'f1.n1.ros', 'f1.n1.rus', 'f2.n1.notbalanced', 'f2.n1.ros', 'f2.n1.rus', 'f3.n1.notbalanced', 'f3.n1.ros', 'f3.n1.rus')
-
-f1.n1 <- rbind(f.1, n.1)
-f2.n1 <- rbind(f.2, n.1)
-f3.n1 <- rbind(f.3, n.1)
-
-binary.data <- list(f1.n1, f2.n1, f3.n1)
-names(binary.data) <- c('f1.n1', 'f2.n1', 'f3.n1')
 
 ## Cross-validation error
 ## Random Oversampling (lowest mean of cross-validation error)
-cross.comp <- matrix(unlist(lapply(binary.svm, function(x) x@cross)), ncol = 3, byrow = T)
-rownames(cross.comp) <- c("f1.n1", "f2.n1", "f3.n1")
-colnames(cross.comp) <- c("original", "ros", "rus")
-which(min(colMeans(cross.comp)) == colMeans(cross.comp))
+cross.comp <- matrix(
+  unlist(lapply(binary.svm, function(x) 
+    unlist(lapply(x, function(y) 
+      y@cross))))
+  , ncol = length(binary.svm))
+colnames(cross.comp) <- c("f1.n1", "f2.n1", "f3.n1")
+rownames(cross.comp) <- names(binary.svm[[1]])
+which(min(rowMeans(cross.comp)) == rowMeans(cross.comp))
 
 ## F-Measure
 ## From single confusion matrices
@@ -128,103 +142,6 @@ fm.comp <- matrix(apply(cbind(1:9, rep(1:3, each = 3)), 1, function(x) {
 rownames(fm.comp) <- c("f1.n1", "f2.n1", "f3.n1")
 colnames(fm.comp) <- c("original", "ros", "rus")
 which(max(colMeans(fm.comp)) == colMeans(fm.comp))
-
-## Using helper functions----
-f1.n1 <- rbind(f.1, n.1)
-p11.notbalanced <- cv.ksvm(x=as.matrix(f1.n1[, -c(1, 2, 24)])
-                           , y=f1.n1$fault
-                           , folds = folds
-                           , type="C-svc"
-                           , kernel='rbfdot')
-
-f2.n1 <- rbind(f.2, n.1)
-p21.notbalanced <- cv.ksvm(x=as.matrix(f2.n1[, -c(1, 2, 24)])
-                           , y=f2.n1$fault
-                           , folds = folds
-                           , type="C-svc"
-                           , kernel='rbfdot')
-
-f3.n1 <- rbind(f.3, n.1)
-p31.notbalanced <- cv.ksvm(x=as.matrix(f3.n1[, -c(1, 2, 24)])
-                           , y=f3.n1$fault
-                           , folds = folds
-                           , type="C-svc"
-                           , kernel='rbfdot')
-
-rm(f1.n1); rm(f2.n1); rm(f3.n1)
-
-## Random Oversampling
-f1.n1 <- balance(data = list(f.1[, -c(1,2)], n.1[, -c(1,2)]), method = 'o', technique = list('under' = NULL, 'over' = ros))
-f1.n1 <- rbind(f1.n1[[1]], f1.n1[[2]])
-p11.ros <- cv.ksvm(x=as.matrix(f1.n1[, -22])
-                   , y=f1.n1$fault
-                   , folds = folds
-                   , type="C-svc"
-                   , kernel='rbfdot')
-
-f2.n1 <- balance(data = list(f.2[, -c(1,2)], n.1[, -c(1,2)]), method = 'o', technique = list('under' = NULL, 'over' = ros))
-f2.n1 <- rbind(f2.n1[[1]], f2.n1[[2]])
-p21.ros <- cv.ksvm(x=as.matrix(f2.n1[, -22])
-                   , y=f2.n1$fault
-                   , folds = folds
-                   , type="C-svc"
-                   , kernel='rbfdot')
-
-f3.n1 <- balance(data = list(f.3[, -c(1,2)], n.1[, -c(1,2)]), method = 'o', technique = list('under' = NULL, 'over' = ros))
-
-f3.n1 <- rbind(f3.n1[[1]], f3.n1[[2]])
-p31.ros <- cv.ksvm(x=as.matrix(f3.n1[, -22])
-                   , y=f3.n1$fault
-                   , folds = folds                
-                   , type="C-svc"
-                   , kernel='rbfdot')
-
-rm(f1.n1); rm(f2.n1); rm(f3.n1)
-
-## Random Undersampling
-f1.n1 <- balance(data = list(f.1[, -c(1,2)], n.1[, -c(1,2)]), method = 'u', technique = list('under' = rus, 'over' = NULL))
-f1.n1 <- rbind(f1.n1[[1]], f1.n1[[2]])
-p11.rus <- cv.ksvm(x=as.matrix(f1.n1[, -22])
-                   , y=f1.n1$fault
-                   , folds = folds
-                   , type="C-svc"
-                   , kernel='rbfdot')
-
-f2.n1 <- balance(data = list(f.2[, -c(1,2)], n.1[, -c(1,2)]), method = 'u', technique = list('under' = rus, 'over' = NULL))
-f2.n1 <- rbind(f2.n1[[1]], f2.n1[[2]])
-p21.rus <- cv.ksvm(x=as.matrix(f2.n1[, -22])
-                   , y=f2.n1$fault
-                   , folds = folds
-                   , type="C-svc"
-                   , kernel='rbfdot')
-
-f3.n1 <- balance(data = list(f.3[, -c(1,2)], n.1[, -c(1,2)]), method = 'u', technique = list('under' = rus, 'over' = NULL))
-f3.n1 <- rbind(f3.n1[[1]], f3.n1[[2]])
-p31.rus <- cv.ksvm(x=as.matrix(f3.n1[, -22])
-                   , y=f3.n1$fault
-                   , folds = folds
-                   , type="C-svc"
-                   , kernel='rbfdot')
-
-rm(f1.n1); rm(f2.n1); rm(f3.n1)
-
-## Comparison Alternative
-binary.cv.svm <- list(p11.notbalanced, p11.ros, p11.rus, p21.notbalanced, p21.ros, p21.rus, p31.notbalanced, p31.ros, p31.rus)
-names(binary.cv.svm) <- c('f1.n1.notbalanced', 'f1.n1.ros', 'f1.n1.rus', 'f2.n1.notbalanced', 'f2.n1.ros', 'f2.n1.rus', 'f3.n1.notbalanced', 'f3.n1.ros', 'f3.n1.rus')
-
-## F-Measure
-## Random Oversampling (highest mean of F-Measure)
-fm.cv.comp <- matrix(unlist(lapply(binary.cv.svm, function(x) mean(f.cv(x)))), ncol = 3, byrow = T)
-rownames(fm.cv.comp) <- c("f1.n1", "f2.n1", "f3.n1")
-colnames(fm.cv.comp) <- c("original", "ros", "rus")
-which(max(colMeans(fm.cv.comp)) == colMeans(fm.cv.comp))
-
-## G-Mean
-## Random Oversampling (highest mean of G-Mean)
-gm.cv.comp <- matrix(unlist(lapply(binary.cv.svm, function(x) mean(gmean.cv(x)))), ncol = 3, byrow = T)
-rownames(gm.cv.comp) <- c("f1.n1", "f2.n1", "f3.n1")
-colnames(gm.cv.comp) <- c("original", "ros", "rus")
-which(max(colMeans(gm.cv.comp)) == colMeans(gm.cv.comp))
 
 ## Part 3----
 ## Fit SVM with default settings on all classes, then balance/weight
