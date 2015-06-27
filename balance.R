@@ -1,25 +1,45 @@
 # perform random undersampling
-# data a dataframe to undersample
+# x input
+# y response
 # n number of instances to remove
 # rate undersampling rate
 
-rus <- function(data, n, rate = 0){
+rus <- function(x, y, n, rate = 0){
+  data = cbind(x, y)
   if(missing(n)) {n = nrow(data)*rate}
   data = data[-sample(nrow(data), n, replace = F),]
+  colnames(data)[ncol(data)] = 'fault'
   
   return(data)
 }
 
 # perform random oversampling
-# data a dataframe to oversample
+# x input
+# y response
 # n number of instances to add
 # rate oversampling rate
 
-ros <- function(data, n, rate = 0){
+ros <- function(x, y, n, rate = 0){
+  data = cbind(x, y)
   if(missing(n)) {n = nrow(data)*rate}
   data = rbind(data, data[sample(nrow(data), n, replace = T),])
+  colnames(data)[ncol(data)] = 'fault'
   
   return(data)
+}
+
+# perform cluster-based undersampling
+# reference: 2013 Hu, Zhang - Clustering-Based Subset Ensemble Learning Method for Imbalanced Data
+# x input
+# y response
+# n number of instances to add
+# rate oversampling rate
+
+cbus <- function(data, n, rate = 0) {
+  if(missing(n)) {n = nrow(data)*rate}
+  target.size = nrow(data) - n
+  k = nrow(data)/target.size
+  clust = kmeans(data, k)
 }
 
 # balance the distributions between two classes
@@ -50,16 +70,22 @@ balance <- function(data, method = c("u", "o", "b"), technique = list('under' = 
   switch(method,
          u = {
            if(uRate == 0) {rem = nrow(maj) - (ratio*nrow(min))}
-           maj = under(maj, rem)
+           ind <- ncol(maj)
+           maj = under(maj[, -ind], maj[, ind], rem)
          },
          o = {
            if(oRate == 0) {add = nrow(maj)/ratio - nrow(min)}
-           min = over(min, add)
+           ind <- ncol(min)
+           min = over(min[, -ind], min[, ind], add)
          },
          b = {
            if(oRate == 0 || uRate == 0) break
-           maj = under(maj, rate = uRate)
-           min = over(min, rate = oRate)                       
+           
+           ind <- ncol(maj)
+           maj = under(maj[, -ind], maj[, ind], rate = uRate)
+           
+           ind <- ncol(min)
+           min = over(min[, -ind], min[, ind], rate = oRate)                       
          })
   
   data = list(min, maj)
@@ -67,7 +93,7 @@ balance <- function(data, method = c("u", "o", "b"), technique = list('under' = 
 }
 
 # balance multi-class data
-# references: Seliya, N., Xu, Z., and Khoshgoftaar, T. M. Addressing Class Imbalance in Non-Binary Classification Problems. 2008
+# reference: Seliya, N., Xu, Z., and Khoshgoftaar, T. M. Addressing Class Imbalance in Non-Binary Classification Problems. 2008
 # data a list of dataframes
 # method a selection of methods
 # technique a list of undersampling and oversampling techniques
@@ -83,9 +109,11 @@ balance.multi <- function(data, method = c("smean", "smedian"), technique = list
            data = lapply(data, function(x){
              d = nrow(x) - m
              if(d > 0){
-               under(x, n = abs(d))
+               ind <- ncol(x)
+               under(x[, -ind], x[, ind], n = abs(d))
              } else {
-               over(x, n = abs(d))
+               ind <- ncol(x)
+               over(x[, -ind], x[, ind], n = abs(d))
              }
            })
          },
@@ -94,9 +122,11 @@ balance.multi <- function(data, method = c("smean", "smedian"), technique = list
            data = lapply(data, function(x){
              d = nrow(x) - m
              if(d > 0){
-               under(x, n = abs(d))
+               ind <- ncol(x)
+               under(x[, -ind], x[, ind], n = abs(d))
              } else {
-               over(x, n = abs(d))
+               ind <- ncol(x)
+               over(x[, -ind], x[, ind], n = abs(d))
              }
            })
          })

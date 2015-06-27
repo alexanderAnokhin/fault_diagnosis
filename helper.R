@@ -18,9 +18,13 @@ f.cv <- function(x) {
   lab <- x[[2]]
   res <- sapply(1:length(pred), function(i) {
     m <- table(pred[[i]], lab[[i]])
-    p <- m[1, 1]/sum(m[1, ])
-    r <- m[1, 1]/sum(m[, 1])
-    2*(p*r)/(p+r)
+    if(all(dim(m) != 2)){
+      ifelse(all(pred[[i]] == lab[[i]]) & all(lab[[i]] == 1), 1, 0)
+    } else {
+      p <- m[1, 1]/sum(m[1, ])
+      r <- m[1, 1]/sum(m[, 1])
+      2*(p*r)/(p+r)
+    }
   })
   
   return(res)
@@ -31,10 +35,24 @@ gmean.cv <- function(x) {
   lab <- x[[2]]
   res <- sapply(1:length(pred), function(i) {
     m <- table(pred[[i]], lab[[i]])
-    tpr <- m[1, 1]/sum(m[1, ])
-    tnr <- m[2, 2]/sum(m[2, ])
-    sqrt(tpr*tnr)
+    if(all(dim(m) != 2)){
+      ifelse(all(pred[[i]] == lab[[i]]), 1, 0)
+    } else {
+      tpr <- m[1, 1]/sum(m[1, ])
+      tnr <- m[2, 2]/sum(m[2, ])
+      sqrt(tpr*tnr)
+    }
   })
   
   return(res)
 }
+
+ksearch <- function(data, nc=15){
+  wss <- (nrow(data)-1)*sum(apply(data,2,var))
+  for (i in 2:nc){
+    wss[i] <- sum(kmeans(data, centers=i)$withinss)}
+  diff2 <- diff(abs(diff(wss)))
+  res <- which(abs(diff2) == max(abs(diff2))) + 1
+  
+  return(res)
+  }
