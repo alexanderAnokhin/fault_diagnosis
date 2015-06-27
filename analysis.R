@@ -7,6 +7,9 @@ library(mlr)
 library(kernlab)
 library(pso)
 
+## Set random seed
+set.seed(20150626)
+
 ## Load transformed data
 source("load.R")
 
@@ -42,33 +45,33 @@ dev.off()
 
 ## First plot
 png(filename="images/visualInspection1.png", width = 600, height = 600)
-par(mfcol = c(2, 2))
+par(mfcol = c(2, 2), cex=1.2)
 plot(faults$s1.sd, faults$s2.sd
      , pch=ifelse(faults$fault == "Failure 1", "*", ".")
      , col=ifelse(faults$fault == "Failure 1", "Red", "Blue")
-     , xlab="Std. of signal from sensor 1"
-     , ylab="Std. of signal from sensor 2"
+     , xlab="Std. of Signal from Sensor 1"
+     , ylab="Std. of Signal from Sensor 2"
      , main=paste0("Failure 1 (n = ", weights["Failure 1"], ")"))
 
 plot(faults$s1.sd, faults$s2.sd
      , pch=ifelse(faults$fault == "Failure 2", "*", ".")
      , col=ifelse(faults$fault == "Failure 2", "Red", "Blue")
-     , xlab="Std. of signal from sensor 1"
-     , ylab="Std. of signal from sensor 2"
+     , xlab="Std. of Signal from Sensor 1"
+     , ylab="Std. of Signal from Sensor 2"
      , main=paste0("Failure 2 (n = ", weights["Failure 2"], ")"))
 
 plot(faults$s1.sd, faults$s2.sd
      , pch=ifelse(faults$fault == "Failure 3", "*", ".")
      , col=ifelse(faults$fault == "Failure 3", "Red", "Blue")
-     , xlab="Std. of signal from sensor 1"
-     , ylab="Std. of signal from sensor 2"
+     , xlab="Std. of Signal from Sensor 1"
+     , ylab="Std. of Signal from Sensor 2"
      , main=paste0("Failure 1 (n = ", weights["Failure 3"], ")"))
 
 plot(faults$s1.sd, faults$s2.sd
      , pch=ifelse(faults$fault == "Normal 1", "*", ".")
      , col=ifelse(faults$fault == "Normal 1", "Red", "Blue")
-     , xlab="Std. of signal from sensor 1"
-     , ylab="Std. of signal from sensor 2"
+     , xlab="Std. of Signal from Sensor 1"
+     , ylab="Std. of Signal from Sensor 2"
      , main=paste0("Normal 1 (n = ", weights["Normal 1"], ")"))
 dev.off()
 
@@ -78,29 +81,29 @@ par(mfcol = c(2, 2))
 plot(faults$s1.peak, faults$s2.peak
      , pch=ifelse(faults$fault == "Failure 1", "*", ".")
      , col=ifelse(faults$fault == "Failure 1", "Red", "Blue")
-     , xlab="Peak of signal from sensor 1"
-     , ylab="Peak of signal from sensor 2"
+     , xlab="Peak of Signal from Sensor 1"
+     , ylab="Peak of Signal from Sensor 2"
      , main=paste0("Failure 1 (n = ", weights["Failure 1"], ")"))
 
 plot(faults$s1.peak, faults$s2.peak
      , pch=ifelse(faults$fault == "Failure 2", "*", ".")
      , col=ifelse(faults$fault == "Failure 2", "Red", "Blue")
-     , xlab="Peak of signal from sensor 1"
-     , ylab="Peak of signal from sensor 2"
+     , xlab="Peak of Signal from Sensor 1"
+     , ylab="Peak of Signal from Sensor 2"
      , main=paste0("Failure 2 (n = ", weights["Failure 2"], ")"))
 
 plot(faults$s1.peak, faults$s2.peak
      , pch=ifelse(faults$fault == "Failure 3", "*", ".")
      , col=ifelse(faults$fault == "Failure 3", "Red", "Blue")
-     , xlab="Peak of signal from sensor 1"
-     , ylab="Peak of signal from sensor 2"
+     , xlab="Peak of Signal from Sensor 1"
+     , ylab="Peak of Signal from Sensor 2"
      , main=paste0("Failure 1 (n = ", weights["Failure 3"], ")"))
 
 plot(faults$s1.peak, faults$s2.peak
      , pch=ifelse(faults$fault == "Normal 1", "*", ".")
      , col=ifelse(faults$fault == "Normal 1", "Red", "Blue")
-     , xlab="Peak of signal from sensor 1"
-     , ylab="Peak of signal from sensor 2"
+     , xlab="Peak of Signal from Sensor 1"
+     , ylab="Peak of Signal from Sensor 2"
      , main=paste0("Normal 1 (n = ", weights["Normal 1"], ")"))
 dev.off()
 
@@ -370,30 +373,76 @@ which(multi.cross.comp == min(multi.cross.comp))
 ## and compare results (choose best kernel function)
 ##
 
-## Part 5
-## Fit k-class SVM and compare results with standard
-## "One-Against-One" approach
-##
+## Set random seed
+set.seed(20150626)
 
-## Part 6
+## Perform selection
+f.smean <- balance.multi(data = all.list, method = "smean", technique = list('under' = rus, 'over' = ros))
+f.smean <- do.call(rbind.data.frame, f.smean)
+
+errors <- sapply(c("vanilladot", "polydot", "rbfdot", "laplacedot", "anovadot")
+                 , function(kernel) { 
+                    fit <- ksvm(x=as.matrix(f.smean[, -c(1, 2, 24)])
+                         , y=f.smean$fault
+                         , type="C-svc"
+                         , kernel=kernel
+                         , cross = folds)
+                    attributes(fit)$cross*100 } )
+names(errors) <- c("Linear", "Polynomial", "Radial Basis", "Laplacian", "ANOVA RBF")
+
+png(filename="images/kernels.png", width = 800, height = 600)
+par(mfcol=c(1, 1), cex=1.5)
+barplot(errors, xlab="Kernel", ylab="Cross Validation Error Rate (%)")
+dev.off()
+
+## Part 5
 ## Explore how feature extraction affects result (PCA analysis, maybe ICA)
 ##
 
 ## Extract features
-pca.fit <- princomp(faults[, -c(1, 2, 24)], cor=TRUE)
+pca.fit <- princomp(rbind(f.1, f.2, f.3, n.1, n.2, n.3)[, -c(1, 2, 24)], cor=TRUE)
 
 ## TODO: explore ICA
 ica.fit <- fastICA(faults[, 3:23], 2)
 
-## Visualise results
+## Visualise results, 11 components explaine about 99% of variance
+png(filename="images/pcas.png", width = 800, height = 600)
 cumsum(pca.fit$sdev^2)/sum(pca.fit$sdev^2)
-plot(x=1:21, cumsum(pca.fit$sdev^2)/sum(pca.fit$sdev^2)
-     , xlab="Number of Components"
-     , ylab="Variance Explained"
+plot(x=1:21, cumsum(pca.fit$sdev^2)/sum(pca.fit$sdev^2)*100
+     , xlab="Number of Principal Components"
+     , ylab="Variance Explained (%)"
      , type="l"
      , lwd=2)
+dev.off()
+
+## Get balanced pca data
+f.1.pca <- data.frame(cbind(f.1[, c(1, 2)], pca.fit$scores[1:dim(f.1)[1], ], f.1[, 24, drop=FALSE]))
+f.2.pca <- data.frame(cbind(f.2[, c(1, 2)], pca.fit$scores[1:dim(f.2)[1], ], f.2[, 24, drop=FALSE]))
+f.3.pca <- data.frame(cbind(f.3[, c(1, 2)], pca.fit$scores[1:dim(f.3)[1], ], f.3[, 24, drop=FALSE]))
+n.1.pca <- data.frame(cbind(n.1[, c(1, 2)], pca.fit$scores[1:dim(n.1)[1], ], n.1[, 24, drop=FALSE]))
+n.2.pca <- data.frame(cbind(n.2[, c(1, 2)], pca.fit$scores[1:dim(n.2)[1], ], n.2[, 24, drop=FALSE]))
+n.3.pca <- data.frame(cbind(n.3[, c(1, 2)], pca.fit$scores[1:dim(n.3)[1], ], n.3[, 24, drop=FALSE]))
+
+names(f.1.pca) <- names(f.1)
+names(f.2.pca) <- names(f.2)
+names(f.3.pca) <- names(f.3)
+names(n.1.pca) <- names(n.1)
+names(n.2.pca) <- names(n.2)
+names(n.3.pca) <- names(n.3)
+
+all.list.pca <- list(f.1.pca, f.2.pca, f.3.pca, n.1.pca, n.2.pca, n.3.pca)
+
+f.smean.pca <- balance.multi(data = all.list.pca, method = "smean", technique = list('under' = rus, 'over' = ros))
+f.smean.pca <- do.call(rbind.data.frame, f.smean)
+
 
 ## Repeat procedure and find optimal number of components
+
+
+## Part 6
+## Fit k-class SVM and compare results with standard
+## "One-Against-One" approach
+##
 
 ## Part 7
 ## Find best parametrization for SVN using PSO
