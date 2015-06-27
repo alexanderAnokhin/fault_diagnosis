@@ -3,6 +3,7 @@ library(ggplot2)
 library(mlr)
 library(kernlab)
 library(pso)
+library(DMwR)
 
 ## Set random seed
 set.seed(20150626)
@@ -15,7 +16,6 @@ source("resources/load.R")
 
 ## Load resampling functions
 source("resources/balance.R")
-source("resources/helper.R")
 
 ## Set number of folds for cross-validation
 folds <- 20
@@ -176,6 +176,14 @@ fit.smedian <- ksvm(x=as.matrix(f.smedian[, -22])
                     , kernel='rbfdot'
                     , cross = folds)
 
+## SMOTE
+f.smote <- SMOTE(form = fault~., faults[, -c(1,2)])
+fit.smote <- ksvm(x=as.matrix(f.smote[, -22])
+                    , y=f.smote$fault
+                    , type="C-svc"
+                    , kernel='rbfdot'
+                    , cross = folds)
+
 ## Naive weights
 weight <- 1/(sapply(all.list, nrow)/sum(sapply(all.list, nrow)))
 fit.weighted <- ksvm(x=as.matrix(faults[, -c(1, 2, 24)])
@@ -186,8 +194,8 @@ fit.weighted <- ksvm(x=as.matrix(faults[, -c(1, 2, 24)])
                      , class.weight = weight)
 
 ## Comparison
-multi.svm <- list(fit.notbalanced, fit.smean, fit.smedian, fit.weighted)
-names(multi.svm) <- c('notbalanced', 'smean', 'smedian', 'weighted')
+multi.svm <- list(fit.notbalanced, fit.smean, fit.smedian, fit.smote, fit.weighted)
+names(multi.svm) <- c('notbalanced', 'smean', 'smedian', 'smote', 'weighted')
 
 ## Cross-validation error
 ## SMean resampling (lowest mean of cross-validation error)

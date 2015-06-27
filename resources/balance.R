@@ -30,20 +30,58 @@ ros <- function(x, y, n, rate = 0){
 # reference: 2013 Hu, Zhang - Clustering-Based Subset Ensemble Learning Method for Imbalanced Data
 # x input
 # y response
-# n number of instances to add
-# rate oversampling rate
+# n number of instances to remove
+# rate undesampling rate
 
 cbus <- function(x, y, n, rate = 0) {
   if(missing(n)) {n = nrow(x)*rate}
   target.size = nrow(x) - n
   k = nrow(x)/target.size
-  clust = kmeans(x, k)
-  ind = ncol(x)
-  temp = cbind(x, 'fault' = y, 'cluster' = clust$cluster)
-  rtemp = nrow(temp)
-  for(i in clust$size) {
-     n = target.size*i/nrow(x)
+  if(k < 2) {
+    data = rus(x, y, n)
+  } else {
+    clust = kmeans(x, k)
+    ind = ncol(x)
+    temp = cbind(x, 'cluster' = clust$cluster, 'fault' = y)
+    data = data.frame(matrix(, ncol = ind + 1))
+    names(data) = names(temp)[-(ind+1)]
+    for(i in 1:length(clust$size)) {
+      rem = nrow(x) - target.size*clust$size[i]/nrow(x)
+      df = filter(temp, cluster == i)
+      data = rbind(data, rus(x = df[, 1:ind)], y = df$fault, n = rem)) 
+    } 
   }
+  
+  return(data)
+}
+
+# perform cluster-based oversampling
+# adapted from: 2013 Hu, Zhang - Clustering-Based Subset Ensemble Learning Method for Imbalanced Data
+# x input
+# y response
+# n number of instances to add
+# rate oversampling rate
+
+cbos <- function(x, y, n, rate = 0) {
+  if(missing(n)) {n = nrow(x)*rate}
+  target.size = nrow(x) + n
+  k = target.size/nrow(x)
+  if(k < 2) {
+    data = ros(x, y, n)
+  } else {
+    clust = kmeans(x, k)
+    ind = ncol(x)
+    temp = cbind(x, 'cluster' = clust$cluster, 'fault' = y)
+    data = data.frame(matrix(, ncol = ind + 1))
+    names(data) = names(temp)[-(ind+1)]
+    for(i in 1:length(clust$size)) {
+      add = n*clust$size[i]/nrow(x)
+      df = filter(temp, cluster == i)
+      data = rbind(data, ros(x = df[, 1:ind], y = df$fault, n = add)) 
+    } 
+  }
+  
+  return(data)
 }
 
 # balance the distributions between two classes
