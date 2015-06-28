@@ -6,302 +6,41 @@ library(pso)
 ## Set random seed
 set.seed(20150626)
 
+## How many seconds in one split
+seconds <- 5
+
 ## Load transformed data
-source("load.R")
+source("resources/load.R")
 
 ## Load resampling functions
-source("balance.R")
-source("helper.R")
+source("resources/balance.R")
+source("resources/helper.R")
 
 ## Set number of folds for cross-validation
 folds <- 20
 
-## Part 2----
-## Fit SVM with default settings on pairs of scenarios, then balance 
-## data and compare results (choose best balance technique)
-##
-
-## not balanced fits
-f1.n1 <- rbind(f.1, n.1)
-f1.n1.notbalanced <- ksvm(x=as.matrix(f1.n1[, -c(1, 2, 24)])
-                          , y=f1.n1$fault
-                          , type="C-svc"
-                          , kernel='rbfdot'
-                          , cross = folds)
-
-f2.n1 <- rbind(f.2, n.1)
-f2.n1.notbalanced <- ksvm(x=as.matrix(f2.n1[, -c(1, 2, 24)])
-                          , y=f2.n1$fault
-                          , type="C-svc"
-                          , kernel='rbfdot'
-                          , cross = folds)
-
-f3.n1 <- rbind(f.3, n.1)
-f3.n1.notbalanced <- ksvm(x=as.matrix(f3.n1[, -c(1, 2, 24)])
-                          , y=f3.n1$fault
-                          , type="C-svc"
-                          , kernel='rbfdot'
-                          , cross = folds)
-
-rm(f1.n1); rm(f2.n1); rm(f3.n1)
-
-## Random Oversampling
-f1.n1 <- balance(data = list(f.1[, -c(1,2)], n.1[, -c(1,2)]), method = 'o', technique = list('under' = NULL, 'over' = ros))
-f1.n1 <- rbind(f1.n1[[1]], f1.n1[[2]])
-f1.n1.ros <- ksvm(x=as.matrix(f1.n1[, -22])
-                  , y=f1.n1$fault
-                  , type="C-svc"
-                  , kernel='rbfdot'
-                  , cross = folds)
-
-f2.n1 <- balance(data = list(f.2[, -c(1,2)], n.1[, -c(1,2)]), method = 'o', technique = list('under' = NULL, 'over' = ros))
-f2.n1 <- rbind(f2.n1[[1]], f2.n1[[2]])
-f2.n1.ros <- ksvm(x=as.matrix(f2.n1[, -22])
-                  , y=f2.n1$fault
-                  , type="C-svc"
-                  , kernel='rbfdot'
-                  , cross = folds)
-
-f3.n1 <- balance(data = list(f.3[, -c(1,2)], n.1[, -c(1,2)]), method = 'o', technique = list('under' = NULL, 'over' = ros))
-f3.n1 <- rbind(f3.n1[[1]], f3.n1[[2]])
-f3.n1.ros <- ksvm(x=as.matrix(f3.n1[, -22])
-                  , y=f3.n1$fault
-                  , type="C-svc"
-                  , kernel='rbfdot'
-                  , cross = folds)
-
-rm(f1.n1); rm(f2.n1); rm(f3.n1)
-
-## Random Undersampling
-f1.n1 <- balance(data = list(f.1[, -c(1,2)], n.1[, -c(1,2)]), method = 'u', technique = list('under' = rus, 'over' = NULL))
-f1.n1 <- rbind(f1.n1[[1]], f1.n1[[2]])
-f1.n1.rus <- ksvm(x=as.matrix(f1.n1[, -22])
-                  , y=f1.n1$fault
-                  , type="C-svc"
-                  , kernel='rbfdot'
-                  , cross = folds)
-
-f2.n1 <- balance(data = list(f.2[, -c(1,2)], n.1[, -c(1,2)]), method = 'u', technique = list('under' = rus, 'over' = NULL))
-f2.n1 <- rbind(f2.n1[[1]], f2.n1[[2]])
-f2.n1.rus <- ksvm(x=as.matrix(f2.n1[, -22])
-                  , y=f2.n1$fault
-                  , type="C-svc"
-                  , kernel='rbfdot'
-                  , cross = folds)
-
-f3.n1 <- balance(data = list(f.3[, -c(1,2)], n.1[, -c(1,2)]), method = 'u', technique = list('under' = rus, 'over' = NULL))
-f3.n1 <- rbind(f3.n1[[1]], f3.n1[[2]])
-f3.n1.rus <- ksvm(x=as.matrix(f3.n1[, -22])
-                  , y=f3.n1$fault
-                  , type="C-svc"
-                  , kernel='rbfdot'
-                  , cross = folds)
-
-rm(f1.n1); rm(f2.n1); rm(f3.n1)
-
-## Comparison
-binary.svm <- list(f1.n1.notbalanced, f1.n1.ros, f1.n1.rus, f2.n1.notbalanced, f2.n1.ros, f2.n1.rus, f3.n1.notbalanced, f3.n1.ros, f3.n1.rus)
-names(binary.svm) <- c('f1.n1.notbalanced', 'f1.n1.ros', 'f1.n1.rus', 'f2.n1.notbalanced', 'f2.n1.ros', 'f2.n1.rus', 'f3.n1.notbalanced', 'f3.n1.ros', 'f3.n1.rus')
-
-f1.n1 <- rbind(f.1, n.1)
-f2.n1 <- rbind(f.2, n.1)
-f3.n1 <- rbind(f.3, n.1)
-
-binary.data <- list(f1.n1, f2.n1, f3.n1)
-names(binary.data) <- c('f1.n1', 'f2.n1', 'f3.n1')
-
-## Cross-validation error
-## Random Oversampling (lowest mean of cross-validation error)
-cross.comp <- matrix(unlist(lapply(binary.svm, function(x) x@cross)), ncol = 3, byrow = T)
-rownames(cross.comp) <- c("f1.n1", "f2.n1", "f3.n1")
-colnames(cross.comp) <- c("original", "ros", "rus")
-which(min(colMeans(cross.comp)) == colMeans(cross.comp))
-
-## F-Measure
-## From single confusion matrices
-## Original and Random Oversampling are tied (highest mean of F-Measure)
-fm.comp <- matrix(apply(cbind(1:9, rep(1:3, each = 3)), 1, function(x) {
-  m <- table(predict(binary.svm[[x[1]]], as.matrix(binary.data[[x[2]]][, -c(1,2,24)])), binary.data[[x[2]]]$fault)
-  p <- m[1, 1]/sum(m[1, ])
-  r <- m[1, 1]/sum(m[, 1])
-  2*(p*r)/(p+r)
-}), nrow = 3, ncol = 3, byrow = T)
-
-rownames(fm.comp) <- c("f1.n1", "f2.n1", "f3.n1")
-colnames(fm.comp) <- c("original", "ros", "rus")
-which(max(colMeans(fm.comp)) == colMeans(fm.comp))
-
-## Using helper functions----
-f1.n1 <- rbind(f.1, n.1)
-p11.notbalanced <- cv.ksvm(x=as.matrix(f1.n1[, -c(1, 2, 24)])
-                           , y=f1.n1$fault
-                           , folds = folds
-                           , type="C-svc"
-                           , kernel='rbfdot')
-
-f2.n1 <- rbind(f.2, n.1)
-p21.notbalanced <- cv.ksvm(x=as.matrix(f2.n1[, -c(1, 2, 24)])
-                        , y=f2.n1$fault
-                        , folds = folds
-                        , type="C-svc"
-                        , kernel='rbfdot')
-
-f3.n1 <- rbind(f.3, n.1)
-p31.notbalanced <- cv.ksvm(x=as.matrix(f3.n1[, -c(1, 2, 24)])
-                        , y=f3.n1$fault
-                        , folds = folds
-                        , type="C-svc"
-                        , kernel='rbfdot')
-
-rm(f1.n1); rm(f2.n1); rm(f3.n1)
-
-## Random Oversampling
-f1.n1 <- balance(data = list(f.1[, -c(1,2)], n.1[, -c(1,2)]), method = 'o', technique = list('under' = NULL, 'over' = ros))
-f1.n1 <- rbind(f1.n1[[1]], f1.n1[[2]])
-p11.ros <- cv.ksvm(x=as.matrix(f1.n1[, -22])
-                , y=f1.n1$fault
-                , folds = folds
-                , type="C-svc"
-                , kernel='rbfdot')
-
-f2.n1 <- balance(data = list(f.2[, -c(1,2)], n.1[, -c(1,2)]), method = 'o', technique = list('under' = NULL, 'over' = ros))
-f2.n1 <- rbind(f2.n1[[1]], f2.n1[[2]])
-p21.ros <- cv.ksvm(x=as.matrix(f2.n1[, -22])
-                , y=f2.n1$fault
-                , folds = folds
-                , type="C-svc"
-                , kernel='rbfdot')
-
-f3.n1 <- balance(data = list(f.3[, -c(1,2)], n.1[, -c(1,2)]), method = 'o', technique = list('under' = NULL, 'over' = ros))
-
-f3.n1 <- rbind(f3.n1[[1]], f3.n1[[2]])
-p31.ros <- cv.ksvm(x=as.matrix(f3.n1[, -22])
-                , y=f3.n1$fault
-                , folds = folds                
-                , type="C-svc"
-                , kernel='rbfdot')
-                
-rm(f1.n1); rm(f2.n1); rm(f3.n1)
-
-## Random Undersampling
-f1.n1 <- balance(data = list(f.1[, -c(1,2)], n.1[, -c(1,2)]), method = 'u', technique = list('under' = rus, 'over' = NULL))
-f1.n1 <- rbind(f1.n1[[1]], f1.n1[[2]])
-p11.rus <- cv.ksvm(x=as.matrix(f1.n1[, -22])
-                   , y=f1.n1$fault
-                   , folds = folds
-                   , type="C-svc"
-                   , kernel='rbfdot')
-
-f2.n1 <- balance(data = list(f.2[, -c(1,2)], n.1[, -c(1,2)]), method = 'u', technique = list('under' = rus, 'over' = NULL))
-f2.n1 <- rbind(f2.n1[[1]], f2.n1[[2]])
-p21.rus <- cv.ksvm(x=as.matrix(f2.n1[, -22])
-                   , y=f2.n1$fault
-                   , folds = folds
-                   , type="C-svc"
-                   , kernel='rbfdot')
-
-f3.n1 <- balance(data = list(f.3[, -c(1,2)], n.1[, -c(1,2)]), method = 'u', technique = list('under' = rus, 'over' = NULL))
-f3.n1 <- rbind(f3.n1[[1]], f3.n1[[2]])
-p31.rus <- cv.ksvm(x=as.matrix(f3.n1[, -22])
-                   , y=f3.n1$fault
-                   , folds = folds
-                   , type="C-svc"
-                   , kernel='rbfdot')
-
-rm(f1.n1); rm(f2.n1); rm(f3.n1)
-
-## Comparison Alternative
-binary.cv.svm <- list(p11.notbalanced, p11.ros, p11.rus, p21.notbalanced, p21.ros, p21.rus, p31.notbalanced, p31.ros, p31.rus)
-names(binary.cv.svm) <- c('f1.n1.notbalanced', 'f1.n1.ros', 'f1.n1.rus', 'f2.n1.notbalanced', 'f2.n1.ros', 'f2.n1.rus', 'f3.n1.notbalanced', 'f3.n1.ros', 'f3.n1.rus')
-
-## F-Measure
-## Random Oversampling (highest mean of F-Measure)
-fm.cv.comp <- matrix(unlist(lapply(binary.cv.svm, function(x) mean(f.cv(x)))), ncol = 3, byrow = T)
-rownames(fm.cv.comp) <- c("f1.n1", "f2.n1", "f3.n1")
-colnames(fm.cv.comp) <- c("original", "ros", "rus")
-which(max(colMeans(fm.cv.comp)) == colMeans(fm.cv.comp))
-
-## G-Mean
-## Random Oversampling (highest mean of G-Mean)
-gm.cv.comp <- matrix(unlist(lapply(binary.cv.svm, function(x) mean(gmean.cv(x)))), ncol = 3, byrow = T)
-rownames(gm.cv.comp) <- c("f1.n1", "f2.n1", "f3.n1")
-colnames(gm.cv.comp) <- c("original", "ros", "rus")
-which(max(colMeans(gm.cv.comp)) == colMeans(gm.cv.comp))
-
-## Part 3----
-## Fit SVM with default settings on all classes, then balance/weight
-## data and compare results (choose best balance technique)
-##
-
+## Get the balanced datasets
 all.list <- list(f.1[, -c(1,2)], f.2[, -c(1,2)], f.3[, -c(1,2)], n.1[, -c(1,2)], n.2[, -c(1,2)], n.3[, -c(1,2)])
-
-## not balanced fits
-fit.notbalanced <- ksvm(x=as.matrix(faults[, -c(1, 2, 24)])
-                        , y=faults$fault
-                        , type="C-svc"
-                        , kernel='rbfdot'
-                        , cross = folds)
-
-## SMean resampling
-f.smean <- balance.multi(data = all.list, method = "smean", technique = list('under' = rus, 'over' = ros))
-f.smean <- do.call(rbind.data.frame, f.smean)
-fit.smean <- ksvm(x=as.matrix(f.smean[, -22])
-                        , y=f.smean$fault
-                        , type="C-svc"
-                        , kernel='rbfdot'
-                        , cross = folds)
-
-## SMedian resampling
-f.smedian <- balance.multi(data = all.list, method = "smedian", technique = list('under' = rus, 'over' = ros))
-f.smedian <- do.call(rbind.data.frame, f.smedian)
-fit.smedian <- ksvm(x=as.matrix(f.smedian[, -22])
-                  , y=f.smedian$fault
-                  , type="C-svc"
-                  , kernel='rbfdot'
-                  , cross = folds)
-
-## Naive weights
-weight <- 1/(sapply(all.list, nrow)/sum(sapply(all.list, nrow)))
-fit.weighted <- ksvm(x=as.matrix(faults[, -c(1, 2, 24)])
-                     , y=faults$fault
-                     , type="C-svc"
-                     , kernel='rbfdot'
-                     , cross = folds
-                     , class.weight = weight)
-
-## Comparison
-multi.svm <- list(fit.notbalanced, fit.smean, fit.smedian, fit.weighted)
-names(multi.svm) <- c('notbalanced', 'smean', 'smedian', 'weighted')
-
-## Cross-validation error
-## SMean resampling (lowest mean of cross-validation error)
-multi.cross.comp <- unlist(lapply(multi.svm, function(x) x@cross))
-which(multi.cross.comp == min(multi.cross.comp))
+b.faults <- balance.multi(data = all.list, method = "smean", technique = list('under' = rus, 'over' = ros))
+b.faults <- do.call(rbind.data.frame, b.faults)
 
 ## Part 4
 ## Fit SVM with different kernels (maybe implementations) 
 ## and compare results (choose best kernel function)
 ##
 
-## Set random seed
-set.seed(20150626)
-
-## Perform selection
-f.smean <- balance.multi(data = all.list, method = "smean", technique = list('under' = rus, 'over' = ros))
-f.smean <- do.call(rbind.data.frame, f.smean)
-
 errors <- sapply(c("vanilladot", "polydot", "rbfdot", "laplacedot", "anovadot")
                  , function(kernel) { 
-                    fit <- ksvm(x=as.matrix(f.smean[, -c(1, 2, 24)])
-                         , y=f.smean$fault
+                    fit <- ksvm(x=as.matrix(b.faults[, -22])
+                         , y=b.faults$fault
                          , type="C-svc"
                          , kernel=kernel
                          , cross = folds)
                     attributes(fit)$cross*100 } )
 names(errors) <- c("Linear", "Polynomial", "Radial Basis", "Laplacian", "ANOVA RBF")
 
-png(filename="images/kernels.png", width = 800, height = 600)
-par(mfcol=c(1, 1), cex=1.5)
+png(filename="images/kernels.png", width = 1000, height = 600)
+par(mfcol=c(1, 1), cex=2)
 barplot(errors, xlab="Kernel", ylab="Cross Validation Error Rate (%)")
 dev.off()
 
@@ -310,14 +49,23 @@ dev.off()
 ##
 
 ## Extract features
-pca.fit <- princomp(rbind(f.1, f.2, f.3, n.1, n.2, n.3)[, -c(1, 2, 24)], cor=TRUE)
+pca.fit <- princomp(faults[, -c(1, 2, 24)], cor=TRUE)
 
-## TODO: explore ICA
-ica.fit <- fastICA(faults[, 3:23], 2)
+## Get datasets
+all.list <- list(data.frame(pca.fit$scores[faults$fault == "Failure 1", ], factor("Failure 1"))
+                 , data.frame(pca.fit$scores[faults$fault == "Failure 2", ], factor("Failure 2"))
+                 , data.frame(pca.fit$scores[faults$fault == "Failure 3", ], factor("Failure 3"))
+                 , data.frame(pca.fit$scores[faults$fault == "Normal 1", ], factor("Normal 1"))
+                 , data.frame(pca.fit$scores[faults$fault == "Normal 2", ], factor("Normal 2"))
+                 , data.frame(pca.fit$scores[faults$fault == "Normal 3", ], factor("Normal 3")))
+pca.faults <- data.frame(pca.fit$scores, faults$fault)
+b.pca.faults <- balance.multi(data = all.list, method = "smean", technique = list('under' = rus, 'over' = ros))
+b.pca.faults <- do.call(rbind.data.frame, b.pca.faults)
 
 ## Visualise results, 11 components explaine about 99% of variance
 png(filename="images/pcas.png", width = 800, height = 600)
 cumsum(pca.fit$sdev^2)/sum(pca.fit$sdev^2)
+par(cex=2)
 plot(x=1:21, cumsum(pca.fit$sdev^2)/sum(pca.fit$sdev^2)*100
      , xlab="Number of Principal Components"
      , ylab="Variance Explained (%)"
@@ -325,54 +73,181 @@ plot(x=1:21, cumsum(pca.fit$sdev^2)/sum(pca.fit$sdev^2)*100
      , lwd=2)
 dev.off()
 
-## Get balanced pca data
-f.1.pca <- data.frame(cbind(f.1[, c(1, 2)], pca.fit$scores[1:dim(f.1)[1], ], f.1[, 24, drop=FALSE]))
-f.2.pca <- data.frame(cbind(f.2[, c(1, 2)], pca.fit$scores[1:dim(f.2)[1], ], f.2[, 24, drop=FALSE]))
-f.3.pca <- data.frame(cbind(f.3[, c(1, 2)], pca.fit$scores[1:dim(f.3)[1], ], f.3[, 24, drop=FALSE]))
-n.1.pca <- data.frame(cbind(n.1[, c(1, 2)], pca.fit$scores[1:dim(n.1)[1], ], n.1[, 24, drop=FALSE]))
-n.2.pca <- data.frame(cbind(n.2[, c(1, 2)], pca.fit$scores[1:dim(n.2)[1], ], n.2[, 24, drop=FALSE]))
-n.3.pca <- data.frame(cbind(n.3[, c(1, 2)], pca.fit$scores[1:dim(n.3)[1], ], n.3[, 24, drop=FALSE]))
-
-names(f.1.pca) <- names(f.1)
-names(f.2.pca) <- names(f.2)
-names(f.3.pca) <- names(f.3)
-names(n.1.pca) <- names(n.1)
-names(n.2.pca) <- names(n.2)
-names(n.3.pca) <- names(n.3)
-
-all.list.pca <- list(f.1.pca, f.2.pca, f.3.pca, n.1.pca, n.2.pca, n.3.pca)
-
-f.smean.pca <- balance.multi(data = all.list.pca, method = "smean", technique = list('under' = rus, 'over' = ros))
-f.smean.pca <- do.call(rbind.data.frame, f.smean)
-
-
 ## Repeat procedure and find optimal number of components
+errors <- sapply(c(9:21)
+                 , function(x) { 
+                   fit.pca <- ksvm(x=as.matrix(b.pca.faults[, c(1:x)])
+                               , y=b.pca.faults$fault
+                               , type="C-svc"
+                               , kernel="anovadot"
+                               , cross = folds)
+                   fit <- ksvm(x=as.matrix(b.faults[, c(1:x)])
+                                   , y=b.faults$fault
+                                   , type="C-svc"
+                                   , kernel="anovadot"
+                                   , cross = folds)
+                   c(attributes(fit)$cross*100
+                     , attributes(fit.pca)$cross*100) } )
 
+## Visualise results, minumal error about 1.2% with 18 PCs
+png(filename="images/pcaEffect.png", width = 800, height = 800)
+par(cex=2)
+plot(x=9:21, errors[1, ]
+     , xlab="Number of Principal Components / Features"
+     , ylab="Cross Validation Error Rate (%)"
+     , type="l", lwd=2, col=1, ylim=c(0, 5.8))
+points(x=9:21, errors[2, ]
+       , xlab="Number of Principal Components / Features"
+       , ylab="Cross Validation Error Rate (%)"
+       , type="l", lwd=2, col=2)
+legend("topright", lty=1, legend=c("Features", "PCs"), lwd=2, col=c(1, 2))
+abline(h=min(errors[2, ]), lty=2, lwd=2)
+dev.off()
 
 ## Part 6
 ## Fit k-class SVM and compare results with standard
 ## "One-Against-One" approach
 ##
 
+errors <- sapply(c("C-svc", "spoc-svc", "kbb-svc")
+                 , function(method) { 
+                   fit <- ksvm(x=as.matrix(b.pca.faults[, 1:18])
+                               , y=b.pca.faults$fault
+                               , type=method
+                               , kernel="anovadot"
+                               , cross = folds)
+                   attributes(fit)$cross*100 } )
+
+alg.time <- sapply(c("C-svc", "spoc-svc", "kbb-svc")
+                 , function(method) { 
+                   system.time(ksvm(x=as.matrix(b.pca.faults[, 1:18])
+                               , y=b.pca.faults$fault
+                               , type=method
+                               , kernel="anovadot"
+                               , cross = folds))[3] } )
+
+names(errors) <- c("One-Against-One", "Crammer multi-class", "Weston, Watkins multi-class")
+alg.results <- rbind(errors, alg.time)
+
+## Show results 
+alg.results
+
 ## Part 7
 ## Find best parametrization for SVN using PSO
 ##
 
+results <- c()
 ## Best parametrization
 fc <- function(x) {
-  svp <- ksvm(pca.fit$scores[, 1:17]
-              , faults$fault
+  fit <- ksvm(x=as.matrix(b.pca.faults[, 1:18])
+              , y=b.pca.faults$fault
               , type="C-svc"
-              , kernel='rbfdot'
-              , kpar=list("sigma"=.1)
-              , C=x
-              , scaled=c()
-              , cross = 10)
-  error <- attributes(svp)$cross
-  error
+              , kpar=list(sigma=x[1], degree=x[2])
+              , C=x[3]
+              , kernel="anovadot"
+              , cross = folds)
+  results <<- c(results, attributes(fit)$cross*100)
+  attributes(fit)$cross*100
 }
+system.time(
+  optim.c <- psoptim(c(1, 1, 1), fc, lower = c(.5, .5, .001), upper = c(2, 2, 100), control = list(maxit = 25, trace=1, trace.stats=TRUE)))
 
-optim.c <- psoptim(c(1), fc, lower = 0, upper = 100)
+## elapsed time ~ 72.5 min. for 25 iterations
+## fitness = 0.8719807, sigma = 0.7657325, degree = 1.0310232, C=20.6512650 
 
-## Predict funal results
-table(predict(svp, pca.fit$scores[, 1:2]), faults$fault) 
+## Visualize results
+png(filename="images/optimization.png", width = 800, height = 800)
+par(cex=2)
+res <- data.frame(call=1:length(results[results < 3]), fitness=results[results < 3])
+plot(res, pch=19
+     , xlab= "Evaluate Call"
+     , ylab= "Cross Validation Error Rate (%)"
+     , ylim=c(.5, 2.7))
+abline(lm(fitness ~., res), lwd=4, col=2, lty=2)
+points(which(min(res$fitness) == res$fitness), min(res$fitness), pch=19, col="red")
+legend("topright", legend="Optimal Value (0.87)", pch=19, col="red")
+dev.off()
+
+##
+## Part 8. Predict final results
+##
+
+## Fit final model 
+fit <- ksvm(x=as.matrix(b.pca.faults[, 1:18])
+            , y=b.pca.faults$fault
+            , type="C-svc"
+            , kpar=list(sigma=optim.c$par[1], degree=optim.c$par[2])
+            , C=optim.c$par[3]
+            , kernel="anovadot")
+
+## Print final results
+results.acc <- table(predict(fit, pca.faults[, 1:18]), pca.faults$fault) 
+100 - sum(diag(results.acc))/sum(results.acc)*100
+results.acc
+
+##
+## Part 9. decrease interval 
+##
+
+## Set random seed
+set.seed(20150626)
+
+d.windows <- sapply(c(1/2, 1, 3, 5, 10, 15, 20), function(x) {
+  time <- system.time( {
+    ## set time window
+    seconds <<- x
+    
+    ## Load transformed data
+    source("resources/load.R")
+    
+    ## Extract features
+    pca.fit <- princomp(faults[, -c(1, 2, 24)], cor=TRUE)
+    
+    ## Get datasets
+    all.list <- list(data.frame(pca.fit$scores[faults$fault == "Failure 1", ], factor("Failure 1"))
+                     , data.frame(pca.fit$scores[faults$fault == "Failure 2", ], factor("Failure 2"))
+                     , data.frame(pca.fit$scores[faults$fault == "Failure 3", ], factor("Failure 3"))
+                     , data.frame(pca.fit$scores[faults$fault == "Normal 1", ], factor("Normal 1"))
+                     , data.frame(pca.fit$scores[faults$fault == "Normal 2", ], factor("Normal 2"))
+                     , data.frame(pca.fit$scores[faults$fault == "Normal 3", ], factor("Normal 3")))
+    pca.faults <- data.frame(pca.fit$scores, faults$fault)
+    b.pca.faults <- balance.multi(data = all.list, method = "smean", technique = list('under' = rus, 'over' = ros))
+    b.pca.faults <- do.call(rbind.data.frame, b.pca.faults)
+    
+    ## Built classifier an return error rate
+    fit <- ksvm(x=as.matrix(b.pca.faults[, 1:18])
+                , y=b.pca.faults$fault
+                , type="C-svc"
+                , kpar=list(sigma=optim.c$par[1], degree=optim.c$par[2])
+                , C=optim.c$par[3]
+                , kernel="anovadot")
+    
+    ## Print final results
+    results.acc <- table(predict(fit, pca.faults[, 1:18]), pca.faults$fault) 
+    results.acc <- 100 - sum(diag(results.acc))/sum(results.acc)*100 })[3]
+  c(time, results.acc)
+  
+})
+
+##
+## Part 10. Explore one-class svm
+##
+
+## Set random seed
+set.seed(20150626)
+
+## Make train and test samples
+n.obs <- dim(n.1)[1]
+intrain <- sample(1:n.obs, n.obs*.8) 
+
+## Make test/train samples
+train <- n.1[intrain, 3:24]
+test <- rbind(n.1[-intrain, ], f.1, f.2, f.3)[, 3:24]
+
+## Fit final model 
+fit <- ksvm(x=as.matrix(train[, -22])
+            , type="one-svc"
+            , kpar=list(sigma=1, degree=1)
+            , kernel="anovadot")
+
+table(predict(fit, test[, -22]), test[, 22])

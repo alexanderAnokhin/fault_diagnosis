@@ -85,7 +85,7 @@ plot(faults$s1.sd, faults$s2.sd
      , col=ifelse(faults$fault == "Failure 3", "Red", "Blue")
      , xlab="Std. of Signal from Sensor 1"
      , ylab="Std. of Signal from Sensor 2"
-     , main=paste0("Failure 1 (n = ", weights["Failure 3"], ")"))
+     , main=paste0("Failure 3 (n = ", weights["Failure 3"], ")"))
 
 plot(faults$s1.sd, faults$s2.sd
      , pch="*"
@@ -117,7 +117,7 @@ plot(faults$s1.peak, faults$s2.peak
      , col=ifelse(faults$fault == "Failure 3", "Red", "Blue")
      , xlab="Peak of Signal from Sensor 1"
      , ylab="Peak of Signal from Sensor 2"
-     , main=paste0("Failure 1 (n = ", weights["Failure 3"], ")"))
+     , main=paste0("Failure 3 (n = ", weights["Failure 3"], ")"))
 
 plot(faults$s1.peak, faults$s2.peak
      , pch="*"
