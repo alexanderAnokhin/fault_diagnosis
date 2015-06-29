@@ -48,7 +48,7 @@ cbus <- function(x, y, n, rate = 0) {
     for(i in 1:length(clust$size)) {
       rem = nrow(x) - target.size*clust$size[i]/nrow(x)
       df = filter(temp, cluster == i)
-      data = rbind(data, rus(x = df[, 1:ind)], y = df$fault, n = rem)) 
+      data = rbind(data, rus(x = df[, 1:ind], y = df$fault, n = rem)) 
     } 
   }
   
