@@ -1,0 +1,106 @@
+\documentclass[12pt,a4paper,titlepage]{article}
+\usepackage[latin1]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{makeidx}
+\usepackage{graphicx}
+\usepackage{subcaption}
+
+%
+\makeatletter
+\setlength{\@fptop}{0pt}
+\makeatother
+%
+
+\oddsidemargin 1cm
+\evensidemargin 1cm
+\textwidth 15cm
+\topmargin -1.25cm
+\textheight 24.37cm
+
+%\setcounter{secnumdepth}{0}
+\begin{document}	
+	\begin{titlepage}
+		\begin{figure}
+			\includegraphics[width=.6\linewidth]{images/logoWWU}
+		\end{figure}
+		\vspace*{2cm}
+		\begin{center}
+			Title:\\			
+			\textbf{Application of Data Analytics in Failure Pattern Recognition}
+			
+			\vspace*{3cm}
+			\textbf{Seminar Thesis}\\			
+			In the context of the seminar ``Application of Data Analytics in Spare Parts Supply Chain Management''\\
+			at the Chair for Information Systems and Supply Chain Management
+		\end{center}
+		\vspace*{1.5cm}
+		\begin{tabbing}
+			\hspace*{4cm}\= \kill
+			Supervisors:			\> Dr.-Ing.Christian Grimme\\
+									\> Dipl.-Inf. Jakob Bossek\\
+									\> Carolin Wagner MScIS\\
+			\\
+			Presented by:			\> Alexander Anokhin\\
+									\> Busso-Peus-Str. 14\\
+									\> Muenster 48149\\
+									\> Germany\\
+									\> +4917675615943\\
+									\> a\_anok01@uni-muenster.de\\
+									\\
+									\> Joshua Peter Handali\\
+									\> Street\\
+									\> Muenster zip-code\\
+									\> Germany\\
+									\> Mobile Phone\\
+									\> j\_hand01@uni-muenster.de\\
+			\\
+			Date of submission: 	\> \today\\
+		\end{tabbing}
+	\end{titlepage}	
+	
+	\pagenumbering{gobble}
+	\tableofcontents
+	\newpage	
+	
+	\pagenumbering{Roman} 
+	\setcounter{page}{1}
+	\clearpage
+	\section*{Figures}
+	\addcontentsline{toc}{section}{Figures}
+	\newpage
+		
+	\clearpage
+	\section*{Tables}
+	\addcontentsline{toc}{section}{Tables}
+	\newpage
+	
+	\clearpage
+	\section*{Abbreviations}
+	\addcontentsline{toc}{section}{Abbreviations}
+	\begin{tabbing}
+		\hspace*{3cm}\= \kill
+		SVM				\> Support Vector Machine\\		
+	\end{tabbing}
+	\newpage
+	
+	\pagenumbering{arabic} 
+	\setcounter{page}{1}
+	\section*{Introduction}
+	\label{introduction}
+	\addcontentsline{toc}{section}{Introduction}
+	
+	\section{First Section}
+	\subsection{Sub Section}
+	
+	\bibliographystyle{plain}
+	\bibliography{References}
+	\newpage
+	
+	\section*{Declaration of Authorship}
+	We hereby declare that, to the best of our knowledge and belief, this Seminar Thesis titled ``Application of Data Analytics in Failure Pattern Recognition'' is our own work. We confirm that each significant contribution to and quotation in this thesis that originates from the work or works of others is indicated by proper use of citation and references.
+	\\\\	
+	Münster, \today
+		
+\end{document}
