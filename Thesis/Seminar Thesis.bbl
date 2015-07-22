@@ -1,3 +1,89 @@
-\begin{thebibliography}{}
+\begin{thebibliography}{10}
+
+\bibitem{Lee2002}
+Hyeran Byun and Seong-Whan Lee.
+\newblock Applications of support vector machines for pattern recognition: A
+  survey.
+\newblock In Seong-Whan Lee and Alessandro Verri, editors, {\em Pattern
+  Recognition with Support Vector Machines}, volume 2388 of {\em Lecture Notes
+  in Computer Science}, pages 213--236. Springer Berlin Heidelberg, 2002.
+
+\bibitem{cortes1995support}
+Corinna Cortes and Vladimir Vapnik.
+\newblock Support-vector networks.
+\newblock {\em Machine learning}, 20(3):273--297, 1995.
+
+\bibitem{Deng20116007}
+S.~Deng, Seng-Yi Lin, and We-Luan Chang.
+\newblock Application of multiclass support vector machines for fault diagnosis
+  of field air defense gun.
+\newblock {\em Expert Systems with Applications}, 38(5):6007 -- 6013, 2011.
+
+\bibitem{hastie2009elements}
+Trevor Hastie, Robert Tibshirani, Jerome Friedman, T~Hastie, J~Friedman, and
+  R~Tibshirani.
+\newblock {\em The elements of statistical learning}, volume~2.
+\newblock Springer, 2009.
+
+\bibitem{Jodas2013240}
+Danilo~S. Jodas, Norian Marranghello, Aledir~S. Pereira, and Rodrigo~C. Guido.
+\newblock Comparing support vector machines and artificial neural networks in
+  the recognition of steering angle for driving of mobile robots through paths
+  in plantations.
+\newblock {\em Procedia Computer Science}, 18(0):240 -- 249, 2013.
+\newblock 2013 International Conference on Computational Science.
+
+\bibitem{Kamruzzaman2006}
+J.~Kamruzzaman and R.K. Begg.
+\newblock Support vector machines and other pattern recognition approaches to
+  the diagnosis of cerebral palsy gait.
+\newblock {\em Biomedical Engineering, IEEE Transactions on},
+  53(12):2479--2490, Dec 2006.
+
+\bibitem{marnerides2015fault}
+AK~Marnerides, S~Malinowski, R~Morla, and HS~Kim.
+\newblock Fault diagnosis in dsl networks using support vector machines.
+\newblock {\em Computer Communications}, 62:72--84, 2015.
+
+\bibitem{pan2012parkinson}
+Song Pan, Serdar Iplikci, Kevin Warwick, and Tipu~Z Aziz.
+\newblock Parkinsons disease tremor classification--a comparison between
+  support vector machines and neural networks.
+\newblock {\em Expert Systems with Applications}, 39(12):10764--10771, 2012.
+
+\bibitem{Samanta2004625}
+B.~Samanta.
+\newblock Gear fault detection using artificial neural networks and support
+  vector machines with genetic algorithms.
+\newblock {\em Mechanical Systems and Signal Processing}, 18(3):625 -- 644,
+  2004.
+
+\bibitem{Shao201278}
+Yang Shao and Ross~S. Lunetta.
+\newblock Comparison of support vector machine, neural network, and cart
+  algorithms for the land-cover classification using limited training data
+  points.
+\newblock {\em ISPRS Journal of Photogrammetry and Remote Sensing}, 70(0):78 --
+  87, 2012.
+
+\bibitem{soleimani2009fault}
+Ali Soleimani, Mohammad~J Mahjoob, and Masoud Shariatpanahi.
+\newblock Fault classification in gears using support vector machines (svms)
+  and signal processing.
+\newblock In {\em Soft Computing, Computing with Words and Perceptions in
+  System Analysis, Decision and Control, 2009. ICSCCW 2009. Fifth International
+  Conference on}, pages 1--4. IEEE, 2009.
+
+\bibitem{vapnik1995nature}
+Vladimir~N Vapnik.
+\newblock The nature of statistical learning theory.
+\newblock 1995.
+
+\bibitem{Widodo20072560}
+Achmad Widodo and Bo-Suk Yang.
+\newblock Support vector machine in machine condition monitoring and fault
+  diagnosis.
+\newblock {\em Mechanical Systems and Signal Processing}, 21(6):2560 -- 2574,
+  2007.
 
 \end{thebibliography}
