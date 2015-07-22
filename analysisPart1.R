@@ -6,6 +6,7 @@ library(pso)
 library(DMwR)
 library(PMCMR)
 library(reshape2)
+library(dunn.test)
 
 ## Set random seed
 set.seed(20150626)
@@ -61,103 +62,153 @@ binary.set <- lapply(binary.data, function(x) {
   res <- list()
   
   # None
-  res$none$svm <- ksvm(x = as.matrix(x[, -22])
-                       , y = x[, 22]
-                       , type = "C-svc"
-                       , kernel = 'rbfdot'
-                       , cross = folds)
-  res$none$min <- length(which(x[, 22] == 1))
-  res$none$maj <- length(which(x[, 22] == 0))
+  m <- sapply(1:10, function(f) {
+    svm <- ksvm(x = as.matrix(x[, -22])
+                , y = x[, 22]
+                , type = "C-svc"
+                , kernel = 'rbfdot'
+                , cross = folds)
+    cbind(svm@cross, length(which(x[, 22] == 1)), length(which(x[, 22] == 1)))
+  })
+
+  res$none$svm <- m[1, ]
+  res$none$min <- mean(m[2, ])
+  res$none$maj <- mean(m[3, ])
   
   # Random oversampling
-  data <- ubOver(X = x[, -22], Y = x[, 22], k = 0)
-  res$ros$svm <- ksvm(x = as.matrix(data$X)
-                      , y = data$Y
-                      , type = "C-svc"
-                      , kernel = 'rbfdot'
-                      , cross = folds)
-  res$ros$min <- length(which(data$Y == 1))
-  res$ros$maj <- length(which(data$Y == 0))
+  m <- sapply(1:10, function(f) {
+    data <- ubOver(X = x[, -22], Y = x[, 22], k = 0)
+    svm <- ksvm(x = as.matrix(data$X)
+                , y = data$Y
+                , type = "C-svc"
+                , kernel = 'rbfdot'
+                , cross = folds)
+    cbind(svm@cross, length(which(data$Y == 1)), length(which(data$Y == 0)))
+  })
+   
+  res$ros$svm <- m[1, ]
+  res$ros$min <- mean(m[2, ])
+  res$ros$maj <- mean(m[3, ])  
   
-  # Synthetic minority over-sampling technique (50:50 ratio)
-  data <- ubSMOTE(X = x[, -22], Y = x[, 22], k = 5, perc.over = 100, perc.under = 200) 
-  res$smo50$svm <- ksvm(x = as.matrix(data$X)
-                        , y = data$Y
-                        , type = "C-svc"
-                        , kernel = 'rbfdot'
-                        , cross = folds)
-  res$smo50$min <- length(which(data$Y == 1))
-  res$smo50$maj <- length(which(data$Y == 0))
+  # Synthetic minority over-sampling technique (50:50 ratio)  
+  m <- sapply(1:10, function(f) {
+    data <- ubSMOTE(X = x[, -22], Y = x[, 22], k = 5, perc.over = 100, perc.under = 200) 
+    svm <- ksvm(x = as.matrix(data$X)
+                , y = data$Y
+                , type = "C-svc"
+                , kernel = 'rbfdot'
+                , cross = folds)
+    cbind(svm@cross, length(which(data$Y == 1)), length(which(data$Y == 0)))
+  })
+  
+  res$smo50$svm <- m[1, ]
+  res$smo50$min <- mean(m[2, ])
+  res$smo50$maj <- mean(m[3, ])
   
   # Synthetic minority over-sampling technique (default settings)
-  data <- ubSMOTE(X = x[, -22], Y = x[, 22], k = 5, perc.over = 200, perc.under = 200) 
-  res$smoD$svm <- ksvm(x = as.matrix(data$X)
-                       , y = data$Y
-                       , type = "C-svc"
-                       , kernel = 'rbfdot'
-                       , cross = folds)
-  res$smoD$min <- length(which(data$Y == 1))
-  res$smoD$maj <- length(which(data$Y == 0))
+  m <- sapply(1:10, function(f) {
+    data <- ubSMOTE(X = x[, -22], Y = x[, 22], k = 5, perc.over = 200, perc.under = 200) 
+    svm <- ksvm(x = as.matrix(data$X)
+                , y = data$Y
+                , type = "C-svc"
+                , kernel = 'rbfdot'
+                , cross = folds)
+    cbind(svm@cross, length(which(data$Y == 1)), length(which(data$Y == 0)))
+  })
+  
+  res$smoD$svm <- m[1, ]
+  res$smoD$min <- mean(m[2, ])
+  res$smoD$maj <- mean(m[3, ])
   
   # Random undersampling
-  data <- ubUnder(X = x[, -22], Y = x[, 22], propMinClass = 50) 
-  res$rus$svm <- ksvm(x = as.matrix(data$X)
-                      , y = data$Y
-                      , type = "C-svc"
-                      , kernel = 'rbfdot'
-                      , cross = folds)
-  res$rus$min <- length(which(data$Y == 1))
-  res$rus$maj <- length(which(data$Y == 0))
+  m <- sapply(1:10, function(f) {
+    data <- ubUnder(X = x[, -22], Y = x[, 22], propMinClass = 50) 
+    svm <- ksvm(x = as.matrix(data$X)
+                , y = data$Y
+                , type = "C-svc"
+                , kernel = 'rbfdot'
+                , cross = folds)
+    cbind(svm@cross, length(which(data$Y == 1)), length(which(data$Y == 0)))
+  })
+  
+  res$rus$svm <- m[1, ]
+  res$rus$min <- mean(m[2, ])
+  res$rus$maj <- mean(m[3, ])
   
   # One-sided sampling
-  data <- ubOSS(X = x[, -22], Y = x[, 22]) 
-  res$oss$svm <- ksvm(x = as.matrix(data$X)
-                      , y = data$Y
-                      , type = "C-svc"
-                      , kernel = 'rbfdot'
-                      , cross = folds)
-  res$oss$min <- length(which(data$Y == 1))
-  res$oss$maj <- length(which(data$Y == 0))
+  m <- sapply(1:10, function(f) {
+    data <- ubOSSx(X = x[, -22], Y = x[, 22]) 
+    svm <- ksvm(x = as.matrix(data$X)
+                , y = data$Y
+                , type = "C-svc"
+                , kernel = 'rbfdot'
+                , cross = folds)
+    cbind(svm@cross, length(which(data$Y == 1)), length(which(data$Y == 0)))
+  })
   
-  # Condensed nearest neighbours
-  data <- ubCNN(X = x[, -22], Y = x[, 22], k = 1) 
-  res$cnn$svm <- ksvm(x = as.matrix(data$X)
-                      , y = data$Y
-                      , type = "C-svc"
-                      , kernel = 'rbfdot'
-                      , cross = folds)
-  res$cnn$min <- length(which(data$Y == 1))
-  res$cnn$maj <- length(which(data$Y == 0))
+  res$oss$svm <- m[1, ]
+  res$oss$min <- mean(m[2, ])
+  res$oss$maj <- mean(m[3, ])
+  
+  # Condensed nearest neighbours  
+  m <- sapply(1:10, function(f) {
+    data <- ubCNN(X = x[, -22], Y = x[, 22], k = 1) 
+    svm <- ksvm(x = as.matrix(data$X)
+                , y = data$Y
+                , type = "C-svc"
+                , kernel = 'rbfdot'
+                , cross = folds)
+    cbind(svm@cross, length(which(data$Y == 1)), length(which(data$Y == 0)))
+  })
+  
+  res$cnn$svm <- m[1, ]
+  res$cnn$min <- mean(m[2, ])
+  res$cnn$maj <- mean(m[3, ])
   
   # Edited nearest neighbours
-  data <- ubENN(X = x[, -22], Y = x[, 22], k = 3) 
-  res$enn$svm <- ksvm(x = as.matrix(data$X)
-                      , y = data$Y
-                      , type = "C-svc"
-                      , kernel = 'rbfdot'
-                      , cross = folds)
-  res$enn$min <- length(which(data$Y == 1))
-  res$enn$maj <- length(which(data$Y == 0))
+  m <- sapply(1:10, function(f) {
+    data <- ubENN(X = x[, -22], Y = x[, 22], k = 3) 
+    svm <- ksvm(x = as.matrix(data$X)
+                , y = data$Y
+                , type = "C-svc"
+                , kernel = 'rbfdot'
+                , cross = folds)
+    cbind(svm@cross, length(which(data$Y == 1)), length(which(data$Y == 0)))
+  })
+  
+  res$enn$svm <- m[1, ]
+  res$enn$min <- mean(m[2, ])
+  res$enn$maj <- mean(m[3, ])
   
   # Neighbourhood cleaning rule
-  data <- ubNCL(X = x[, -22], Y = x[, 22], k = 3) 
-  res$ncl$svm <- ksvm(x = as.matrix(data$X)
-                      , y = data$Y
-                      , type = "C-svc"
-                      , kernel = 'rbfdot'
-                      , cross = folds)
-  res$ncl$min <- length(which(data$Y == 1))
-  res$ncl$maj <- length(which(data$Y == 0))
+  m <- sapply(1:10, function(f) {
+    data <- ubNCL(X = x[, -22], Y = x[, 22], k = 3) 
+    svm <- ksvm(x = as.matrix(data$X)
+                , y = data$Y
+                , type = "C-svc"
+                , kernel = 'rbfdot'
+                , cross = folds)
+    cbind(svm@cross, length(which(data$Y == 1)), length(which(data$Y == 0)))
+  })
   
+  res$ncl$svm <- m[1, ]
+  res$ncl$min <- mean(m[2, ])
+  res$ncl$maj <- mean(m[3, ])
+    
   # Tomek link
-  data <- ubTomek(X = x[, -22], Y = x[, 22]) 
-  res$tom$svm <- ksvm(x = as.matrix(data$X)
-                      , y = data$Y
-                      , type = "C-svc"
-                      , kernel = 'rbfdot'
-                      , cross = folds)
-  res$tom$min <- length(which(data$Y == 1))
-  res$tom$maj <- length(which(data$Y == 0))
+  m <- sapply(1:10, function(f) {
+    data <- ubTomek(X = x[, -22], Y = x[, 22]) 
+    svm <- ksvm(x = as.matrix(data$X)
+                , y = data$Y
+                , type = "C-svc"
+                , kernel = 'rbfdot'
+                , cross = folds)
+    cbind(svm@cross, length(which(data$Y == 1)), length(which(data$Y == 0)))
+  })
+  
+  res$tom$svm <- m[1, ]
+  res$tom$min <- mean(m[2, ])
+  res$tom$maj <- mean(m[3, ])
   
   return(res)
 })
@@ -193,17 +244,14 @@ rownames(instances.maj) <- names(binary.maj[[1]])
 ## Comparison----
 ## Cross-validation error
 ## SMOTE (lowest mean of cross-validation error)
-cross.comp <- matrix(
-  unlist(lapply(binary.svm, function(x) 
-    unlist(lapply(x, function(y) 
-      y@cross))))
-  , ncol = length(binary.svm))
-colnames(cross.comp) <- names(binary.svm)
-rownames(cross.comp) <- names(binary.svm[[1]])
-which(min(rowMeans(cross.comp)) == rowMeans(cross.comp))
-posthoc.friedman.nemenyi.test(t(cross.comp))
+cross.comp <- do.call(rbind, lapply(binary.svm, function(x) do.call(cbind, x)))
+
+which(min(colMeans(cross.comp)) == colMeans(cross.comp))
 cross.melt <- melt(cross.comp)
-colnames(cross.melt) <- c('method', 'data', 'value')
+colnames(cross.melt) <- c('i', 'method', 'value')
+
+kruskal.test(cross.melt$value, cross.melt$method)
+dunn.test(cross.melt$value, cross.melt$method, method = 'bonferroni')
 p <- ggplot(cross.melt, aes(x = method, y = value)) + geom_boxplot(aes(fill = method))
 p <- p + xlab("Method") + ylab("Cross-Validation Error") + ggtitle("Sampling Methods Comparison for Binary SVMs")
 p <- p + theme(plot.title=element_text(size=28, face="bold"), text=element_text(size=28))
@@ -214,10 +262,10 @@ cross.rank <- apply(cross.comp, 2, min_rank)
 which(min(rowMeans(cross.rank)) == rowMeans(cross.rank))
 
 ## Data difficulty
-posthoc.friedman.nemenyi.test(cross.comp)
-q <- ggplot(cross.melt, aes(x = data, y = value)) + geom_boxplot(aes(fill = data))
-q <- q + xlab("Dataset") + ylab("Cross-Validation Error") + ggtitle("Data Difficulty for Binary Cases")
-q
+#posthoc.friedman.nemenyi.test(cross.comp)
+#q <- ggplot(cross.melt, aes(x = data, y = value)) + geom_boxplot(aes(fill = data))
+#q <- q + xlab("Dataset") + ylab("Cross-Validation Error") + ggtitle("Data Difficulty for Binary Cases")
+#q
 
 ## F-Measure
 ## From single confusion matrices
@@ -299,8 +347,9 @@ multi.svm <- sapply(1:100, function(x) {
 multi.cross.comp <- apply(multi.svm, 2, function(x)
   unlist(lapply(x, function(y) y@cross)))
 which(min(rowMeans(multi.cross.comp)) == rowMeans(multi.cross.comp))
-posthoc.friedman.nemenyi.test(t(multi.cross.comp))
 multi.cross.melt <- melt(multi.cross.comp)
+kruskal.test(multi.cross.melt$value, multi.cross.melt$method)
+dunn.test(multi.cross.melt$value, multi.cross.melt$method, method = 'boneferroni')
 colnames(multi.cross.melt) <- c('method', 'iteration', 'value')
 z <- ggplot(multi.cross.melt, aes(x = method, y = value)) + geom_boxplot(aes(fill = method))
 z <- z + xlab("Method") + ylab("Cross-Validation Error") + ggtitle("Sampling Methods Comparison for K-class SVMs")
