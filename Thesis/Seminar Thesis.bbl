@@ -19,12 +19,6 @@ S.~Deng, Seng-Yi Lin, and We-Luan Chang.
   of field air defense gun.
 \newblock {\em Expert Systems with Applications}, 38(5):6007 -- 6013, 2011.
 
-\bibitem{hastie2009elements}
-Trevor Hastie, Robert Tibshirani, Jerome Friedman, T~Hastie, J~Friedman, and
-  R~Tibshirani.
-\newblock {\em The elements of statistical learning}, volume~2.
-\newblock Springer, 2009.
-
 \bibitem{Jodas2013240}
 Danilo~S. Jodas, Norian Marranghello, Aledir~S. Pereira, and Rodrigo~C. Guido.
 \newblock Comparing support vector machines and artificial neural networks in
@@ -79,11 +73,23 @@ Vladimir~N Vapnik.
 \newblock The nature of statistical learning theory.
 \newblock 1995.
 
+\bibitem{widodo2007application}
+Achmad Widodo and Bo-Suk Yang.
+\newblock Application of nonlinear feature extraction and support vector
+  machines for fault diagnosis of induction motors.
+\newblock {\em Expert Systems with Applications}, 33(1):241--250, 2007.
+
 \bibitem{Widodo20072560}
 Achmad Widodo and Bo-Suk Yang.
 \newblock Support vector machine in machine condition monitoring and fault
   diagnosis.
 \newblock {\em Mechanical Systems and Signal Processing}, 21(6):2560 -- 2574,
   2007.
+
+\bibitem{Widodo2007299}
+Achmad Widodo, Bo-Suk Yang, and Tian Han.
+\newblock Combination of independent component analysis and support vector
+  machines for intelligent faults diagnosis of induction motors.
+\newblock {\em Expert Systems with Applications}, 32(2):299 -- 312, 2007.
 
 \end{thebibliography}

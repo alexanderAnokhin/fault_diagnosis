@@ -81,7 +81,10 @@
 	\begin{tabbing}
 		\hspace*{3cm}\= \kill
 		ANN				\> Artificial Neural Networks\\
+		ANOVA RBF		\> ANOVA Radial Basis Function\\ 
 		CART			\> Classification and Regression Trees\\
+		ICA				\> Independent Component Analysis\\
+		PCA				\> Principal Component Analysis\\
 		SVM				\> Support Vector Machine\\		
 	\end{tabbing}
 	\newpage
@@ -147,7 +150,6 @@
 	\begin{figure}[h!]
 		\centering
 		\includegraphics[width=1\linewidth]{images/signalBehavior}
-		\label{fig:polinom}
 		\caption[Signal Behavior]{Signal Behavior. Red line represents removed observations.}
 		\label{fig:signalBehavior}
 	\end{figure} 	
@@ -177,6 +179,7 @@
 	After data preprocessing and feature extraction size of data was significantly reduced even without feature selection step. Final training sample consist of about 920 observations in total that makes possible to apply SVM in order to classify gear failures. Every observation  consists of 21 features: 7 extracted features for every sensor signal, and  response variable which shows existence of failure.
 	
 	\subsection{Exploratory Analysis}
+	\label{exploratoryAnalysis}
 	Another important step in order to build classifier is exploratory analysis. The aim of exploratory analysis is to understand data and check possible underlying assumptions required for analysis. It helps to find incentives for further steps and omit impossible scenarios which saves time and resources. SVM approach is very versatile and does nor require data to follow specific distribution that fact shortened exploratory step. 
 	
 	Since features were extracted from one signal there is a possibility that some of them are highly correlated and will create unnecessary computational overhead, during the process of training, without improvement of accuracy. It can be clearly seen from Table \ref{table:correlationMatricesOne} that features correlate along one sensor, for example, standard deviation of signal from Sensor 1 functionally determines root mean square for the same signal. In addition, features from different sensors correlate as well. Standard deviation of signal from Sensor 2 correlates with standard deviation of signal but from Sensor 3, which is shown at Table \ref{table:correlationMatricesAll}. These issues highlights the problem of dimensionality reduction which will be explored further in Section \ref{dimensionalityReduction}. 
@@ -217,13 +220,11 @@
 			\centering
 			\includegraphics[width=.8\linewidth]{images/visualInspection1}
 			\caption{Failure 1}
-			\label{fig:sep}
 		\end{subfigure}%
 		\begin{subfigure}{.5\textwidth}
 			\centering
 			\includegraphics[width=.8\linewidth]{images/visualInspection2}
 			\caption{Failure 3}
-			\label{fig:unsep}
 		\end{subfigure}
 			\caption[Separation of Classes]{Separation of Classes. Red stars represent certain failure classes, blue points represent the rest of observations.}
 		\label{fig:visualInspection}
@@ -235,7 +236,44 @@
 	
 	\section{SVM Classifier 3.5-4 page}
 	\subsection{Choice of Kernel}
-	\subsection{Dimensionality Reduction and Feature Selection}	
+	Kernels make SVM able to map initial feature space into high dimensional one and find there decision boundary without additional computational overhead. Appropriate choice of such a transformation highly influence accuracy of classifier. It is open question in almost any research in area of failure pattern recognition. There is no general rule for choosing a specific kernel. However in recent years there is a tendency to use Radial Basis Kernel as a benchmark.
+	
+	In order to estimate the optimal transformation standard SVM classifiers were build on balanced training data with different kernels: Linear, Polynomial, Radial Basis, Laplacian and ANOVA Radial Basis Function (ANOVA RBF). Each kernel transformation was used with default parameters specified in function \textit{ksvm} of package \textit{kernlab}\footnote{https://cran.r-project.org/web/packages/kernlab/kernlab.pdf} built in R. 
+	
+	\begin{table}[h!]
+		\centering
+		\begin{tabular}{ | l | c | c | }
+			\hline
+			\multicolumn{1}{ | c | }{\textbf{Kernel}} 
+				& \multicolumn{1}{ | c | }{\textbf{CV Error Rate (\%)}} 
+				& \multicolumn{1}{ | c | }{\textbf{Parameters}}\\
+			\hline
+			Linear 			& 1.96 & ---\\
+			Polynomial 		& 2.07 & $\left(d=1, \alpha=1, c=1\right)$\\
+			Radial Basis 	& 2.40 & $\left(\sigma=1\right)$\\
+			Laplacian 		& 2.07 & $\left(\sigma=1\right)$\\
+			ANOVA RBF 		& 1.42 & $\left(\sigma=1, d=1\right)$\\
+			\hline
+		\end{tabular}
+		\caption[Accuracy of Kernels]{Accuracy of Kernels. CV Error Rate represents 20-fold cross-validation error rate on balanced training dataset.} 
+		\label{table:kernelAccuracy}
+	\end{table}
+	
+	Table \ref{table:kernelAccuracy} shows that ANOVA RBF stably outperforms other kernels taking into account cross-validation error rate. However it has two parameters which have to be optimized later on. From this point of view Linear kernel seems to be reasonable to choose rather than ANOVA RBF since it does not have parameters and brings second lowest error rate. Of course, it depends on analysis restrictions: if priority is given to accuracy then ANOVA RBF should be chosen, otherwise if time is prioritized then Linear kernel is the best transformation. In this analysis ANOVA RBF was used further as a base kernel transformation in assumption that accuracy is primary over time. Equation \ref{anovaRbf} represents this transformation.
+	
+	\begin{equation}
+		k(x, y)=\sum_{k=1}^{n}exp\left(-\sigma\left(x^k-y^k\right)^2\right)^d
+		\label{anovaRbf} 
+	\end{equation}
+	
+	One can argue such a comparison since kernels were compared using default parameters but not the optimal ones. This fact can be explained in two ways. First, time and resource restrictions of analysis do not allow to find optimal parameters for every kernel, because it requires additional time and adequate computational resources. Second, it seems unrealistic that other kernels will outperform ANOVA RBF in terms of accuracy having relatively big gap in default settings.  
+	
+	\subsection{Dimensionality Reduction and Feature Selection}
+	\label{dimensionalityReduction}
+	It was already explored in Section \ref{exploratoryAnalysis} that features are correlated which can potentially negatively affect classifier efficiency. One of methods to solve such a problem is to apply dimensionality reduction technique, it extracts only the optimal features and reduce the dimensionality. The idea behind that is to find independent subsets of features or combinations of features which explain the most variation of the data related to classifier. As number of dimensions is reduced accuracy increases and computing time can be shortened as well. Many methods have been proposed to perform dimensionality reduction in failure pattern recognition problems. Most widespread methods are Principal Component Analysis (PCA) and Independent Component Analysis (ICA). These approaches and their nonlinear modifications were used by Widodo et. al \cite{widodo2007application, Widodo2007299} in faults diagnosis of induction motors.  
+	
+	In this analysis PCA was used in order to reduce number of features. Using correlation matrix instead of covariance in computing principal components lead to 99\% of variance explained by first 13 out of 21 features. 
+		
 	\subsection{Multi Class SVM}
 	\subsection{Parameter Optimization}
 	\subsection{Final Model and Further Modifications}
