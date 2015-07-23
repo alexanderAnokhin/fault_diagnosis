@@ -292,6 +292,8 @@ fm.rank <- apply(fm.comp, 2, min_rank)
 set.seed(20150626)
 
 all.list <- list(f.1[, -c(1,2)], f.2[, -c(1,2)], f.3[, -c(1,2)], n.1[, -c(1,2)], n.2[, -c(1,2)], n.3[, -c(1,2)])
+raw.weight <- sum(sapply(all.list, nrow))/sapply(all.list, nrow)
+weight <- raw.weight/sum(raw.weighted)
 
 multi.svm <- sapply(1:100, function(x) {
   res <- list()
@@ -330,8 +332,6 @@ multi.svm <- sapply(1:100, function(x) {
                     , cross = folds)
   
   ## Naive weights
-  raw.weight <- sum(sapply(all.list, nrow))/sapply(all.list, nrow)
-  weight <- raw.weight/sum(raw.weight)
   res$weighted <- ksvm(x=as.matrix(faults[, -c(1, 2, 24)])
                        , y=faults$fault
                        , type="C-svc"
