@@ -252,14 +252,20 @@ colnames(cross.melt) <- c('i', 'method', 'value')
 
 kruskal.test(cross.melt$value, cross.melt$method)
 dunn.test(cross.melt$value, cross.melt$method, method = 'bonferroni')
+posthoc.friedman.nemenyi.test(cross.comp)
 p <- ggplot(cross.melt, aes(x = method, y = value)) + geom_boxplot(aes(fill = method))
 p <- p + xlab("Method") + ylab("Cross-Validation Error") + ggtitle("Sampling Methods Comparison for Binary SVMs")
 p <- p + theme(plot.title=element_text(size=28, face="bold"), text=element_text(size=28))
 p
 cross.comp
 
-cross.rank <- apply(cross.comp, 2, min_rank)
-which(min(rowMeans(cross.rank)) == rowMeans(cross.rank))
+cross.rank <- apply(cross.comp, 1, min_rank)
+rank.melt <- melt(t(cross.rank))
+colnames(rank.melt) <- c('i', 'method', 'rank')
+q <- ggplot(rank.melt, aes(x = method, y = rank)) + geom_boxplot(aes(fill = method))
+q <- q + xlab("Method") + ylab("Rank") + ggtitle("Sampling Methods Comparison for Binary SVMs")
+q <- q + theme(plot.title=element_text(size=28, face="bold"), text=element_text(size=28))
+q
 
 ## Data difficulty
 #posthoc.friedman.nemenyi.test(cross.comp)
@@ -270,19 +276,19 @@ which(min(rowMeans(cross.rank)) == rowMeans(cross.rank))
 ## F-Measure
 ## From single confusion matrices
 ## Original, OSS, ENN, and Tomek are tied (highest mean of F-Measure)
-fm.comp <- sapply(1:9, function(x) {
-  unlist(lapply(binary.svm[[x]], function(y) {
-    m <- table(predict(y, as.matrix(binary.data[[x]][, -22])), binary.data[[x]][, 22])
-    p <- m[1, 1]/sum(m[1, ])
-    r <- m[1, 1]/sum(m[, 1])
-    2*(p*r)/(p+r)
-  }))
-})
-colnames(fm.comp) <- names(binary.svm)
-rownames(fm.comp) <- names(binary.svm[[1]])
-which(max(rowMeans(fm.comp)) == rowMeans(fm.comp))
+#fm.comp <- sapply(1:9, function(x) {
+#  unlist(lapply(binary.svm[[x]], function(y) {
+#    m <- table(predict(y, as.matrix(binary.data[[x]][, -22])), binary.data[[x]][, 22])
+#    p <- m[1, 1]/sum(m[1, ])
+#   r <- m[1, 1]/sum(m[, 1])
+#    2*(p*r)/(p+r)
+#  }))
+#})
+#colnames(fm.comp) <- names(binary.svm)
+#rownames(fm.comp) <- names(binary.svm[[1]])
+#which(max(rowMeans(fm.comp)) == rowMeans(fm.comp))
 
-fm.rank <- apply(fm.comp, 2, min_rank)
+#fm.rank <- apply(fm.comp, 2, min_rank)
 
 ## Part 3----
 ## Fit SVM with default settings on all classes, then balance/weight
@@ -293,7 +299,7 @@ set.seed(20150626)
 
 all.list <- list(f.1[, -c(1,2)], f.2[, -c(1,2)], f.3[, -c(1,2)], n.1[, -c(1,2)], n.2[, -c(1,2)], n.3[, -c(1,2)])
 raw.weight <- sum(sapply(all.list, nrow))/sapply(all.list, nrow)
-weight <- raw.weight/sum(raw.weighted)
+weight <- raw.weight/sum(raw.weight)
 
 multi.svm <- sapply(1:100, function(x) {
   res <- list()
@@ -349,9 +355,10 @@ multi.cross.comp <- apply(multi.svm, 2, function(x)
   unlist(lapply(x, function(y) y@cross)))
 which(min(rowMeans(multi.cross.comp)) == rowMeans(multi.cross.comp))
 multi.cross.melt <- melt(multi.cross.comp)
-kruskal.test(multi.cross.melt$value, multi.cross.melt$method)
-dunn.test(multi.cross.melt$value, multi.cross.melt$method, method = 'boneferroni')
 colnames(multi.cross.melt) <- c('method', 'iteration', 'value')
+kruskal.test(multi.cross.melt$value, multi.cross.melt$method)
+dunn.test(multi.cross.melt$value, multi.cross.melt$method, method = 'bonferroni')
+posthoc.friedman.nemenyi.test(t(multi.cross.comp[-4, ]))
 z <- ggplot(multi.cross.melt, aes(x = method, y = value)) + geom_boxplot(aes(fill = method))
 z <- z + xlab("Method") + ylab("Cross-Validation Error") + ggtitle("Sampling Methods Comparison for K-class SVMs")
 z <- z + theme(plot.title=element_text(size=28, face="bold"), text=element_text(size=28))
@@ -363,3 +370,12 @@ y <- ggplot(wSmote, aes(x = method, y = value)) + geom_boxplot(aes(fill = method
 y <- y + xlab("Method") + ylab("Cross-Validation Error") + ggtitle("Sampling Methods Comparison for K-class SVMs")
 y <- y + theme(plot.title=element_text(size=28, face="bold"), text=element_text(size=28))
 y
+
+# rank
+multi.rank <- apply(multi.cross.comp[-4, ], 2, min_rank)
+multi.rank.melt <- melt(t(multi.rank))
+colnames(multi.rank.melt) <- c('i', 'method', 'rank')
+w <- ggplot(multi.rank.melt, aes(x = method, y = rank)) + geom_boxplot(aes(fill = method))
+w <- w + xlab("Method") + ylab("Rank") + ggtitle("Sampling Methods Comparison for K-class SVMs")
+w <- w + theme(plot.title=element_text(size=28, face="bold"), text=element_text(size=28))
+w
