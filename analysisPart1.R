@@ -330,7 +330,8 @@ multi.svm <- sapply(1:100, function(x) {
                     , cross = folds)
   
   ## Naive weights
-  weight <- sum(sapply(all.list, nrow))/sapply(all.list, nrow)
+  raw.weight <- sum(sapply(all.list, nrow))/sapply(all.list, nrow)
+  weight <- raw.weight/sum(raw.weight)
   res$weighted <- ksvm(x=as.matrix(faults[, -c(1, 2, 24)])
                        , y=faults$fault
                        , type="C-svc"
