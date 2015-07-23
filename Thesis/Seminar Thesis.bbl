@@ -1,5 +1,15 @@
 \begin{thebibliography}{10}
 
+\bibitem{tomek}
+Two modifications of cnn.
+\newblock {\em Systems, Man and Cybernetics, IEEE Transactions on},
+  SMC-6(11):769--772, Nov 1976.
+
+\bibitem{smote}
+Kevin~W. Bowyer, Nitesh~V. Chawla, Lawrence~O. Hall, and W.~Philip Kegelmeyer.
+\newblock {SMOTE:} synthetic minority over-sampling technique.
+\newblock {\em CoRR}, abs/1106.1813, 2011.
+
 \bibitem{Lee2002}
 Hyeran Byun and Seong-Whan Lee.
 \newblock Applications of support vector machines for pattern recognition: A
@@ -25,6 +35,12 @@ S.~Deng, Seng-Yi Lin, and We-Luan Chang.
   of field air defense gun.
 \newblock {\em Expert Systems with Applications}, 38(5):6007 -- 6013, 2011.
 
+\bibitem{cnn}
+P.~Hart.
+\newblock The condensed nearest neighbor rule (corresp.).
+\newblock {\em Information Theory, IEEE Transactions on}, 14(3):515--516, May
+  1968.
+
 \bibitem{Jodas2013240}
 Danilo~S. Jodas, Norian Marranghello, Aledir~S. Pereira, and Rodrigo~C. Guido.
 \newblock Comparing support vector machines and artificial neural networks in
@@ -39,6 +55,21 @@ J.~Kamruzzaman and R.K. Begg.
   the diagnosis of cerebral palsy gait.
 \newblock {\em Biomedical Engineering, IEEE Transactions on},
   53(12):2479--2490, Dec 2006.
+
+\bibitem{oss}
+Miroslav Kubat and Stan Matwin.
+\newblock Addressing the curse of imbalanced training sets: One-sided
+  selection.
+\newblock In {\em In Proceedings of the Fourteenth International Conference on
+  Machine Learning}, pages 179--186. Morgan Kaufmann, 1997.
+
+\bibitem{ncl}
+Jorma Laurikkala.
+\newblock Improving identification of difficult small classes by balancing
+  class distribution.
+\newblock In {\em Proceedings of the 8th Conference on AI in Medicine in
+  Europe: Artificial Intelligence Medicine}, AIME '01, pages 63--66, London,
+  UK, UK, 2001. Springer-Verlag.
 
 \bibitem{marnerides2015fault}
 AK~Marnerides, S~Malinowski, R~Morla, and HS~Kim.
@@ -57,6 +88,12 @@ B.~Samanta.
   vector machines with genetic algorithms.
 \newblock {\em Mechanical Systems and Signal Processing}, 18(3):625 -- 644,
   2004.
+
+\bibitem{multisampling}
+N.~Seliya, Zhiwei Xu, and T.M. Khoshgoftaar.
+\newblock Addressing class imbalance in non-binary classification problems.
+\newblock In {\em Tools with Artificial Intelligence, 2008. ICTAI '08. 20th
+  IEEE International Conference on}, volume~1, pages 460--466, Nov 2008.
 
 \bibitem{Shao201278}
 Yang Shao and Ross~S. Lunetta.
@@ -108,5 +145,11 @@ Achmad Widodo, Bo-Suk Yang, and Tian Han.
 \newblock Combination of independent component analysis and support vector
   machines for intelligent faults diagnosis of induction motors.
 \newblock {\em Expert Systems with Applications}, 32(2):299 -- 312, 2007.
+
+\bibitem{enn}
+Dennis~L. Wilson.
+\newblock Asymptotic properties of nearest neighbor rules using edited data.
+\newblock {\em Systems, Man and Cybernetics, IEEE Transactions on},
+  SMC-2(3):408--421, July 1972.
 
 \end{thebibliography}
