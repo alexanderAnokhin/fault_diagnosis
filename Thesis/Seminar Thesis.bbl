@@ -13,6 +13,12 @@ Corinna Cortes and Vladimir Vapnik.
 \newblock Support-vector networks.
 \newblock {\em Machine learning}, 20(3):273--297, 1995.
 
+\bibitem{crammer2001algorithmic}
+Koby Crammer and Yoram Singer.
+\newblock On the algorithmic implementation of multiclass kernel-based vector
+  machines.
+\newblock {\em Journal of Machine Learning Research}, 2:265--292, 2001.
+
 \bibitem{Deng20116007}
 S.~Deng, Seng-Yi Lin, and We-Luan Chang.
 \newblock Application of multiclass support vector machines for fault diagnosis
@@ -60,6 +66,12 @@ Yang Shao and Ross~S. Lunetta.
 \newblock {\em ISPRS Journal of Photogrammetry and Remote Sensing}, 70(0):78 --
   87, 2012.
 
+\bibitem{shi1999empirical}
+Yuhui Shi and Russell~C Eberhart.
+\newblock Empirical study of particle swarm optimization.
+\newblock In {\em Evolutionary Computation, 1999. CEC 99. Proceedings of the
+  1999 Congress on}, volume~3. IEEE, 1999.
+
 \bibitem{soleimani2009fault}
 Ali Soleimani, Mohammad~J Mahjoob, and Masoud Shariatpanahi.
 \newblock Fault classification in gears using support vector machines (svms)
@@ -72,6 +84,11 @@ Ali Soleimani, Mohammad~J Mahjoob, and Masoud Shariatpanahi.
 Vladimir~N Vapnik.
 \newblock The nature of statistical learning theory.
 \newblock 1995.
+
+\bibitem{weston1998multi}
+Jason Weston and Chris Watkins.
+\newblock Multi-class support vector machines.
+\newblock Technical report, Citeseer, 1998.
 
 \bibitem{widodo2007application}
 Achmad Widodo and Bo-Suk Yang.

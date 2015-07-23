@@ -79,12 +79,16 @@
 	\section*{Abbreviations}
 	\addcontentsline{toc}{section}{Abbreviations}
 	\begin{tabbing}
-		\hspace*{3cm}\= \kill
+		\hspace*{5cm}\= \kill
 		ANN				\> Artificial Neural Networks\\
 		ANOVA RBF		\> ANOVA Radial Basis Function\\ 
 		CART			\> Classification and Regression Trees\\
+		DET				\> Distance Evaluation Technique\\
+		GA				\> Genetic Algorithm\\
+		GS				\> Grid Search\\
 		ICA				\> Independent Component Analysis\\
 		PCA				\> Principal Component Analysis\\
+		PSO			    \> Particle Swarm Optimization\\
 		SVM				\> Support Vector Machine\\		
 	\end{tabbing}
 	\newpage
@@ -111,7 +115,6 @@
 	\begin{figure}[h!]
 		\centering
 		\includegraphics[width=1\linewidth]{images/testEnvironment}
-		\label{fig:polinom}
 		\caption{Test Environment}
 		\label{fig:testEnvironment}
 	\end{figure}	  
@@ -234,7 +237,7 @@
 		
 	\section{Data Balancing 3 pages}
 	
-	\section{SVM Classifier 3.5-4 page}
+	\section{SVM Classifier}
 	\subsection{Choice of Kernel}
 	Kernels make SVM able to map initial feature space into high dimensional one and find there decision boundary without additional computational overhead. Appropriate choice of such a transformation highly influence accuracy of classifier. It is open question in almost any research in area of failure pattern recognition. There is no general rule for choosing a specific kernel. However in recent years there is a tendency to use Radial Basis Kernel as a benchmark.
 	
@@ -270,12 +273,63 @@
 	
 	\subsection{Dimensionality Reduction and Feature Selection}
 	\label{dimensionalityReduction}
-	It was already explored in Section \ref{exploratoryAnalysis} that features are correlated which can potentially negatively affect classifier efficiency. One of methods to solve such a problem is to apply dimensionality reduction technique, it extracts only the optimal features and reduce the dimensionality. The idea behind that is to find independent subsets of features or combinations of features which explain the most variation of the data related to classifier. As number of dimensions is reduced accuracy increases and computing time can be shortened as well. Many methods have been proposed to perform dimensionality reduction in failure pattern recognition problems. Most widespread methods are Principal Component Analysis (PCA) and Independent Component Analysis (ICA). These approaches and their nonlinear modifications were used by Widodo et. al \cite{widodo2007application, Widodo2007299} in faults diagnosis of induction motors.  
+	It was already explored in Section \ref{exploratoryAnalysis} that features are correlated that can potentially negatively affect classifier efficiency. One of methods to solve such a problem is to apply dimensionality reduction technique, it extracts only the optimal features and reduce the dimensionality. The idea behind that is to find independent subsets of features or combinations of features which explain the most variation in data. As number of dimensions is reduced accuracy increases and computing time can be shortened as well. 
 	
-	In this analysis PCA was used in order to reduce number of features. Using correlation matrix instead of covariance in computing principal components lead to 99\% of variance explained by first 13 out of 21 features. 
+	Many methods have been proposed to perform dimensionality reduction in failure pattern recognition problems. Most widespread methods are Principal Component Analysis (PCA) and Independent Component Analysis (ICA). These approaches and their nonlinear modifications were used, for instance, by Widodo et. al \cite{widodo2007application, Widodo2007299} in faults diagnosis of induction motors. In this analysis PCA was used in order to reduce number of features. Using correlation matrix instead of covariance in computing principal components lead to 99\% of variance explained by first 13 out of 21 principal components. However it does not mean what only first 13 principal components should be used. It is advisable in pattern recognition to use selection techniques which help to choose appropriate number of features without loses of important information. Here Genetic Algorithms (GA) and Distance Evaluation Techniques (DET) can be applied. 
+	
+	\begin{figure}[h!]
+		\centering
+		\includegraphics[width=.5\linewidth]{images/pcaEffect}
+		\caption[Effect of PCA]{Effect of PCA. Black line represents error rate using a certain number of principal components. Red and blue lines show minimum error rates for fit using principal components and fit using extracted features, minimum error rates equal 1.42\% and 1.2\% respectively.}
+		\label{fig:pcaEffect}
+	\end{figure}
+	
+	Another method to do feature selection, which is used in this analysis, is to iteratively fit classifiers for any reasonable number of principal components and track error rate over fits. Figure \ref{fig:pcaEffect} shows that PCA improves not only error rate, which was decreased from 1.42\% to 1.2\%, but also removes unnecessary information since in optimal case only 18 out of 21 principal components are used. It is also reasonable to mention how fast error rate degradates at early stages. Starting from roughly a half of all components - 11 principal components, error rate is lower than 2\% that makes predictions very accurate. 
 		
 	\subsection{Multi Class SVM}
+	Initially SVM technique was proposed as a binary classifier. However in this analysis underlaying problem requires division between six classes: three normal and three failure ones. ``One to Others'' and ``One Against One'' modifications of SVM were proposed to deal with this limitation. In ``One to Others'' method there are basically two classes in each optimization process: one class and the others as the other class. The winner is defined as class with the maximum distance to decision boundary. ``One Against One'' approach uses $k(k - 1)/2$ classifiers for $k$-class problem. Here each classifier is trained on data from two classes. After training process winner class can be deduced using voting scheme.      
+		
+	Instead of creating several binary classifiers, a more natural way is to distinguish
+	all classes in one single optimization process.	Initially Weston and Watkins proposed $k$-class SVM \cite{weston1998multi}. Further modification was proposed by Crammer and Singer \cite{crammer2001algorithmic}. These methods generalize optimization problem of binary case for $k$-classes, however final complexity impedes extensive use of these approaches in practice.
+	
+	So far in this analysis ``One Against One'' approach was used. Model consisted of 15 binary SVM classifiers and winer was deduced using voting procedure: class with the highest number of votes is a winner. However other approaches should be considered as well. Since ``One to Others'' approach can bring unbalance into already balanced training data it was excluded form consideration. Table \ref{table:multiSVM} represents comparison of different approaches.  
+	
+	\begin{table}[h!]
+		\centering
+		\begin{tabular}{ | l | c | c | c | }
+			\hline
+			\multicolumn{1}{ | c | }{\textbf{Method}}
+				& \multicolumn{1}{ | c | }{\textbf{Classifiers}} 
+				& \multicolumn{1}{ | p{2.5cm} | }{\centering \textbf{CV Error \\Rate (\%)}} 
+				& \multicolumn{1}{ | p{2.5cm} | }{\centering \textbf{Elapsed \\Time (sec)}}\\
+			\hline
+			``One Against One'' & 15 	& 1.2 	& 5.2\\
+			Crammer and Singer 	& 1 	& 2.28	& 6.1\\
+			Weston and Watkins 	& 1 	& 29.58	& 11.2\\
+			\hline
+		\end{tabular}
+		\caption[Multi Class SVM]{Multi Class SVM. CV Error Rate represents 20-fold cross-validation error rate on balanced training dataset.} 
+		\label{table:multiSVM}
+	\end{table}
+	
+	It can be seen from Table \ref{table:multiSVM} that multi class modifications do not benefit computational performance and final accuracy of classifier at all. Moreover error rate using Weston and Watkins multi class method is dramatically higher. It can be possibly explained by the fact of inappropriate parametrization, since default parameters were used in experiments. In addition, computational time for this method more than twice longer than time to build 15 standard binary SVM classifiers.	
+	
 	\subsection{Parameter Optimization}
+	So far model was build under default parameters. More precisely, regularization strength parameter $C$ of SVM classifier equals 1 and ANOVA RBF kernel has a vector of parameters equals $\alpha=\left(\sigma=1, d=1\right)$. Of course, proper parametrization is an open problem in failure pattern recognition. It requires time and expensive computational resources, however accuracy can significantly benefit from such optimization. In area of machine fault diagnosis a variety of methods was proposed to cope that problem: GAs, Particle Swarm Optimization (PSO) and Grid Search (GS).
+	
+	In this analysis in order to optimize parameters PSO proposed by Kennedy, Eberhart and Shi \cite{shi1999empirical} is used. This method is mainly based on behavior of animals then they are trying to find the source of food. Optimization experiment used 25 iterations of algorithm with default settings specified for function \textit{psoptim} of package \textit{pso}\footnote{https://cran.r-project.org/web/packages/pso/pso.pdf} built in R.       
+		
+	\begin{figure}[h!]
+		\centering
+		\includegraphics[width=.5\linewidth]{images/optimization}
+		\caption[Parameter Optimization]{Parameter Optimization. Black points represent fitness of a single model evaluation, optimal fitness is 0.87\% of 20-fold cross validation error rate.}
+		\label{fig:optimization}
+	\end{figure}
+	
+	Figure \ref{fig:optimization} represents search procedure of optimal parameters. It can be seen that general trend is decreasing over iterations. In the end of optimization, final 20-fold	cross validation error decreased from 1.2\% to 0.87\%. The regularization strength parameter $C$ changed from 1 to 20.65 that basically means that decision margin of classifier become thinner. Parameters of kernel changed as well, initial vector $\alpha=\left(\sigma=1, d=1\right)$ moved to $\alpha'=\left(\sigma=0.77, d=1.03\right)$. However optimization process was very computationally exhaustive and took about 72.5 minutes for 25 iterations, in comparison one fit lasts only 5.5 seconds.
+	
+	Two remarks should be done here. First, found parameters are ``pseudo'' optimal since PSO is just a heuristic and does not provide global solutions. Second, estimated error rate is robust but can change, since division to folds in cross validation is stochastic. It can be fixed in two ways: increasing number of folds or setting up replication for evaluation of fitness. Replication means that error rate for a set of parameters will be calculated multiple times and then averaged. Both methods improve quality of optimization but increase complexity. 
+	
 	\subsection{Final Model and Further Modifications}
 	
 	\section{Results and Discussion 1-1.5 page}
