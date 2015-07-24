@@ -367,7 +367,7 @@ z
 ## without SMOTE
 wSmote <- filter(multi.cross.melt, method != 'smote')
 y <- ggplot(wSmote, aes(x = method, y = value)) + geom_boxplot(aes(fill = method))
-y <- y + xlab("Method") + ylab("Cross-Validation Error") + ggtitle("Sampling Methods Comparison for K-class SVMs")
+y <- y + xlab("Method") + ylab("Cross-Validation Error") + ggtitle("Sampling Methods Comparison for Multi Class SVMs")
 y <- y + theme(plot.title=element_text(size=28, face="bold"), text=element_text(size=28))
 y
 
