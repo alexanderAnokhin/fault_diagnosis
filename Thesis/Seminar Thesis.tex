@@ -241,6 +241,7 @@
 		
 	\section{Data Balancing}	
 	\subsection{Descriptions of Sampling Methods}
+	\label{samplingMethods}
 	There are eight different sampling methods plus a variant of one of those methods for the binary experiment. The original articles for each algorithms are cited accordingly, although this work used their implementations available in the \textit{unbalanced}\footnote{https://cran.r-project.org/web/packages/unbalanced/unbalanced.pdf} package on R. The algorithm multi class sampling method, however, is directly implemented according to its source article while still utilizing a couple basic sampling algorithms from the previously mentioned R package.
 \\\\
 \textbf{Binary Sampling Methods}
@@ -412,7 +413,7 @@ Both experiments are analyzed with the same approach. It involves visual inspect
 		\begin{tabular}{ | l | c | c | c | }
 			\hline
 			\multicolumn{1}{ | c | }{\textbf{Method}}
-				& \multicolumn{1}{ | c | }{\textbf{Classifiers}} 
+				& \multicolumn{1}{ | p{2.5cm} | }{\textbf{Classifiers}} 
 				& \multicolumn{1}{ | p{2.5cm} | }{\centering \textbf{CV Error \\Rate (\%)}} 
 				& \multicolumn{1}{ | p{2.5cm} | }{\centering \textbf{Elapsed \\Time (sec)}}\\
 			\hline
@@ -444,7 +445,34 @@ Both experiments are analyzed with the same approach. It involves visual inspect
 	Two remarks should be done here. First, found parameters are ``pseudo'' optimal since PSO is just a heuristic and does not provide global solutions. Second, estimated error rate is robust but can change, since division to folds in cross validation is stochastic. It can be fixed in two ways: increasing number of folds or setting up replication for evaluation of fitness. Replication means that error rate for a set of parameters will be calculated multiple times and then averaged. Both methods improve quality of optimization but increase complexity. 
 	
 	\subsection{Final Model and Further Modifications}
-	After improvements and modifications final model consists of 15 standard ``$C$'' implementations of binary SVM classifier with parameter $C=20.65$. Kernel transformation is ANOVA RBF with a vector of parameters $\alpha=\left(\sigma=0.77, d=1.03\right)$. ``One Against One'' approach is used to deduce the winner class  
+	After all improvements and modifications final model incorporates ``One Against One'' approach as well as voting scheme to extend SVM for multi class problem. Therefore 15 standard ``$C$'' implementations of SVM with parameter $C=20.65$ are build to distinguish between each pair of classes. Kernel transformation for every binary classifier is ANOVA RBF with a vector of parameters $\alpha=\left(\sigma=0.77, d=1.03\right)$. Model is fitted on first 18 principal components extracted from initial data. Training data are balanced with use of ``Smean'' technique explored in Section \ref{samplingMethods}. Final 20-fold cross validation error rate equals 0.87\% which makes model very accurate.
+	
+	\begin{table}[h!]
+		\centering
+		\begin{tabular}{ l | c | c | c | c | c | c | }
+			\multicolumn{1}{ c | }{\textbf{}}
+				& \multicolumn{1}{ | c | }{\textbf{Norm. 1}} 
+				& \multicolumn{1}{ | c | }{\centering \textbf{Norm. 2}}
+				& \multicolumn{1}{ | c | }{\centering \textbf{Norm. 3}}
+				& \multicolumn{1}{ | c | }{\centering \textbf{Fail. 1}}
+				& \multicolumn{1}{ | c | }{\centering \textbf{Fail. 2}} 
+				& \multicolumn{1}{ | c | }{\centering \textbf{Fail. 3}}\\
+			\hline
+			\textbf{Norm. 1} & \textbf{229} 	& 0 			& 1				& 0 			& 0 			& 0\\
+			\textbf{Norm. 2} & 0 				& \textbf{249} 	& 1				& 0 			& 0 			& 0\\
+			\textbf{Norm. 3} & 0 				& 3 			& \textbf{228}	& 0 			& 0 			& 0\\
+			\textbf{Fail. 1} & 0 				& 0 			& 0				& \textbf{90}	& 0 			& 0\\
+			\textbf{Fail. 2} & 1 				& 0 			& 0				& 0 			&\textbf{19}	& 0\\
+			\textbf{Fail. 3} & 2 				& 0 			& 0				& 0 			& 0 			& \textbf{90}\\
+			\hline
+		\end{tabular}
+		\caption[Confusion Matrix for Final Model]{Confusion Matrix for Final Model. Norm. is short for Normal and Fail. is short for Failure respectively. Actual classes are arranged in columns, predicted classes in rows.} 
+		\label{table:confusionMatrix}
+	\end{table}	
+	
+	Table \ref{table:confusionMatrix} shows final confusion matrix obtained testing model on initial unbalanced data. Overall accuracy of predictions is 99.1\% with error rate 0.9\% which is very close to obtained earlier cross validation error rate estimation of 0.87\%. It is reasonable to mention that none of observations from failure classes were misclassified, however some observations from normal classes were recognized as failures. There is also some overlap between normal classes. These results were expected and can be explained that during balancing normal classes were undersampled and failure classes oversampled therefore model already seen all observations from failure classes and only a portion of observations from normal classes.
+	
+	   
 	
 	\section{Results and Discussion 1-1.5 page}
 	
