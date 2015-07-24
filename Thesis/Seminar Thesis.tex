@@ -83,12 +83,18 @@
 		ANN				\> Artificial Neural Networks\\
 		ANOVA RBF		\> ANOVA Radial Basis Function\\ 
 		CART			\> Classification and Regression Trees\\
+		CBM			\> Condition Based Maintenance\\
+		CNN			\> Condensed Nearest Neighbour\\		
 		DET				\> Distance Evaluation Technique\\
+		ENN			\> Edited Nearest Neighbour\\		
 		GA				\> Genetic Algorithm\\
 		GS				\> Grid Search\\
 		ICA				\> Independent Component Analysis\\
+		NCL			\> Neighbourhood Cleaning Rule\\
+		OSS			\> One-Sided Sampling\\
 		PCA				\> Principal Component Analysis\\
 		PSO			    \> Particle Swarm Optimization\\
+		SMOTE		\> Synthetic Minority Oversampling Technique\\
 		SVM				\> Support Vector Machine\\		
 	\end{tabbing}
 	\newpage
@@ -98,6 +104,8 @@
 	\section*{Introduction}
 	\label{introduction}
 	\addcontentsline{toc}{section}{Introduction}
+	A successful failure pattern recognition system can go a long way in improving spare parts management in terms of allowing a good maintenance plan. Fault detection manifests itself as a part of condition based maintenance (CBM) \cite{McKee2014}. Failure pattern recognition maybe done not only to differentiate between failure and normal operation signals, but also to distinguish between different failure patterns. Identifying patterns leading to failure opens up possibilities for early failure detection and also investigating the root cause of failure. Meanwhile, distinguishing different failure patterns may lead to effective fault management action plans, as failures can then be accurately located. These opportunities lead to efforts on automatic failure pattern recognition, one of which can be done by applying classification algorithms. 
+	
 	Support vector machine (SVM) is a relatively new computational learning method based on the statistical learning theory. Exhaustive overviews of SVM applicability in pattern recognition \cite{Lee2002} and fault diagnosis \cite{Widodo20072560} clearly show that SVM is a versatile and efficient technique for such problems. The concept of SVM is based on Vapnik-Chervonenkis theory \cite{cortes1995support, vapnik1995nature} that recently emerged as a general mathematical framework for estimating (learning) dependencies from finite samples \cite[p. 2561]{Widodo20072560}. The idea of SVM is to separate feature space by constructing linear boundaries between two classes. Moreover initial feature space can be enlarged with help of kernel transformations. 
 		
 	SVM approach is not only theoretically well-founded, but also superior in practice. Recent surveys show that tuned SVM classifiers has become more efficient in pattern recognition than other methods: Artificial Neural Networks (ANN) \cite{Deng20116007, Jodas2013240, Kamruzzaman2006, pan2012parkinson, Shao201278} and Classification and Regression Trees (CART) \cite{marnerides2015fault, Shao201278}. In addition, SVMs have one significant advantage compared to conventional methods of pattern recognition such as ANNs. These methods straggle to solve problems with a small number of samples. For the reason that it is hard to obtain sufficient fault samples in practice, SVM is introduced into machines fault diagnosis due to its high accuracy and good generalization for a smaller number of samples \cite[p. 2562]{Widodo20072560}. 
