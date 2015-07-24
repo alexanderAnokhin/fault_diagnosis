@@ -29,6 +29,11 @@ Koby Crammer and Yoram Singer.
   machines.
 \newblock {\em Journal of Machine Learning Research}, 2:265--292, 2001.
 
+\bibitem{compare}
+Janez Dem\v{s}ar.
+\newblock Statistical comparisons of classifiers over multiple data sets.
+\newblock {\em J. Mach. Learn. Res.}, 7:1--30, December 2006.
+
 \bibitem{Deng20116007}
 S.~Deng, Seng-Yi Lin, and We-Luan Chang.
 \newblock Application of multiclass support vector machines for fault diagnosis
@@ -40,6 +45,12 @@ P.~Hart.
 \newblock The condensed nearest neighbor rule (corresp.).
 \newblock {\em Information Theory, IEEE Transactions on}, 14(3):515--516, May
   1968.
+
+\bibitem{Garcia2009}
+Haibo He and E.A. Garcia.
+\newblock Learning from imbalanced data.
+\newblock {\em Knowledge and Data Engineering, IEEE Transactions on},
+  21(9):1263--1284, Sept 2009.
 
 \bibitem{Jodas2013240}
 Danilo~S. Jodas, Norian Marranghello, Aledir~S. Pereira, and Rodrigo~C. Guido.
@@ -70,6 +81,13 @@ Jorma Laurikkala.
 \newblock In {\em Proceedings of the 8th Conference on AI in Medicine in
   Europe: Artificial Intelligence Medicine}, AIME '01, pages 63--66, London,
   UK, UK, 2001. Springer-Verlag.
+
+\bibitem{Lopez2013113}
+Victoria López, Alberto Fernández, Salvador García, Vasile Palade, and
+  Francisco Herrera.
+\newblock An insight into classification with imbalanced data: Empirical
+  results and current trends on using data intrinsic characteristics.
+\newblock {\em Information Sciences}, 250:113 -- 141, 2013.
 
 \bibitem{marnerides2015fault}
 AK~Marnerides, S~Malinowski, R~Morla, and HS~Kim.
@@ -117,10 +135,22 @@ Ali Soleimani, Mohammad~J Mahjoob, and Masoud Shariatpanahi.
   System Analysis, Decision and Control, 2009. ICSCCW 2009. Fifth International
   Conference on}, pages 1--4. IEEE, 2009.
 
+\bibitem{Sun2009}
+YANMIN SUN, ANDREW K.~C. WONG, and MOHAMED~S. KAMEL.
+\newblock Classification of imbalanced data: A review.
+\newblock {\em International Journal of Pattern Recognition and Artificial
+  Intelligence}, 23(04):687--719, 2009.
+
 \bibitem{vapnik1995nature}
 Vladimir~N Vapnik.
 \newblock The nature of statistical learning theory.
 \newblock 1995.
+
+\bibitem{Yao2012}
+Shuo Wang and Xin Yao.
+\newblock Multiclass imbalance problems: Analysis and potential solutions.
+\newblock {\em Systems, Man, and Cybernetics, Part B: Cybernetics, IEEE
+  Transactions on}, 42(4):1119--1130, Aug 2012.
 
 \bibitem{weston1998multi}
 Jason Weston and Chris Watkins.
