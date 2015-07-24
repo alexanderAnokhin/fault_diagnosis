@@ -83,12 +83,18 @@
 		ANN				\> Artificial Neural Networks\\
 		ANOVA RBF		\> ANOVA Radial Basis Function\\ 
 		CART			\> Classification and Regression Trees\\
+		CBM			\> Condition Based Maintenance\\
+		CNN			\> Condensed Nearest Neighbour\\		
 		DET				\> Distance Evaluation Technique\\
+		ENN			\> Edited Nearest Neighbour\\		
 		GA				\> Genetic Algorithm\\
 		GS				\> Grid Search\\
 		ICA				\> Independent Component Analysis\\
+		NCL			\> Neighbourhood Cleaning Rule\\
+		OSS			\> One-Sided Sampling\\
 		PCA				\> Principal Component Analysis\\
 		PSO			    \> Particle Swarm Optimization\\
+		SMOTE		\> Synthetic Minority Oversampling Technique\\
 		SVM				\> Support Vector Machine\\		
 	\end{tabbing}
 	\newpage
@@ -98,7 +104,9 @@
 	\section*{Introduction}
 	\label{introduction}
 	\addcontentsline{toc}{section}{Introduction}
-	Support vector machine (SVM) is a relatively new computational learning method based on the statistical learning theory. Exhaustive overviews of SVM applicability in pattern recognition \cite{Lee2002} and fault diagnosis \cite{Widodo20072560} clearly show that SVM is a versatile and efficient technique for such problems. The concept of SVM is based on Vapnik-Chervonenkis theory \cite{cortes1995support, vapnik1995nature} that recently emerged as a general mathematical framework for estimating (learning) dependencies from finite samples \cite[p. 2561]{Widodo20072560}. The idea of SVM is to separate feature space by constructing linear boundaries with the biggest margin between two classes. Moreover initial feature space can be enlarged with help of kernel transformations. 
+	A successful failure pattern recognition system can go a long way in improving spare parts management in terms of allowing a good maintenance plan. Fault detection manifests itself as a part of condition based maintenance (CBM) \cite{McKee2014}. Failure pattern recognition maybe done not only to differentiate between failure and normal operation signals, but also to distinguish between different failure patterns. Identifying patterns leading to failure opens up possibilities for early failure detection and also investigating the root cause of failure. Meanwhile, distinguishing different failure patterns may lead to effective fault management action plans, as failures can then be accurately located. These opportunities lead to efforts on automatic failure pattern recognition, one of which can be done by applying classification algorithms. 
+	
+	Support vector machine (SVM) is a relatively new computational learning method based on the statistical learning theory. Exhaustive overviews of SVM applicability in pattern recognition \cite{Lee2002} and fault diagnosis \cite{Widodo20072560} clearly show that SVM is a versatile and efficient technique for such problems. The concept of SVM is based on Vapnik-Chervonenkis theory \cite{cortes1995support, vapnik1995nature} that recently emerged as a general mathematical framework for estimating (learning) dependencies from finite samples \cite[p. 2561]{Widodo20072560}. The idea of SVM is to separate feature space by constructing linear boundaries between two classes. Moreover initial feature space can be enlarged with help of kernel transformations.
 		
 	SVM approach is not only theoretically well-founded, but also superior in practice. Recent surveys show that tuned SVM classifiers has become more efficient in pattern recognition than other methods: Artificial Neural Networks (ANN) \cite{Deng20116007, Jodas2013240, Kamruzzaman2006, pan2012parkinson, Shao201278} and Classification and Regression Trees (CART) \cite{marnerides2015fault, Shao201278}. In addition, SVMs have one significant advantage compared to conventional methods of pattern recognition such as ANNs. These methods straggle to solve problems with a small number of samples. For the reason that it is hard to obtain sufficient fault samples in practice, SVM is introduced into machines fault diagnosis due to its high accuracy and good generalization for a smaller number of samples \cite[p. 2562]{Widodo20072560}. 
 	
@@ -194,8 +202,7 @@
 	\begin{table}[h!]
 		\begin{subtable}{.5\linewidth}
 			\centering
-			\begin{tabular}{ | p{.4cm} | p{.4cm} | p{.4cm} | p{.4cm} | p{.4cm} | }
-				\hline
+			\begin{tabular}{ p{.4cm} | p{.4cm} | p{.4cm} | p{.4cm} | p{.4cm} | }
 				  			& \textbf{1} 	& \textbf{2} 	& \textbf{3} 	& \textbf{4}\\ \hline
 				\textbf{1} 	& 1 			& 0 			& .04 			& 0\\ \hline
 				\textbf{2} 	&  				& 1 			& .57 			& 1\\ \hline
@@ -207,8 +214,7 @@
 		\end{subtable}
 		\begin{subtable}{.5\linewidth}
 			\centering
-			\begin{tabular}{ | p{.4cm} | p{.4cm} | p{.4cm} | p{.4cm} | }
-				\hline
+			\begin{tabular}{ p{.4cm} | p{.4cm} | p{.4cm} | p{.4cm} | }
 				  			& \textbf{5}	& \textbf{6} 	& \textbf{7}\\ \hline
 				\textbf{5} 	& 1				& .02 			& .4\\ \hline
 				\textbf{6} 	&   			& 1 			& .54\\ \hline
@@ -472,11 +478,57 @@ Both experiments are analyzed with the same approach. It involves visual inspect
 	
 	Table \ref{table:confusionMatrix} shows final confusion matrix obtained testing model on initial unbalanced data. Overall accuracy of predictions is 99.1\% with error rate 0.9\% which is very close to obtained earlier cross validation error rate estimation of 0.87\%. It is reasonable to mention that none of observations from failure classes were misclassified, however some observations from normal classes were recognized as failures. There is also some overlap between normal classes. These results were expected and can be explained that during balancing normal classes were undersampled and failure classes oversampled therefore model already seen all observations from failure classes and only a portion of observations from normal classes.
 	
-	   
+	So far provided data were aggregated in time window of 5 seconds, it basically means what the answer for a question: ``Under which conditions does system operate now?'' can be answered in 5 seconds. However in some scenarios this response time is not enough. From one side, logically decrease of response time will negatively affect accuracy, since one observation is not that informative, but from the another side it will make model more sensitive to failures. Additionally, since time window is decreasing, size of training data is increasing and computational overhead may arise. These scenarios can be explored through simulation experiments using provided data. 
 	
-	\section{Results and Discussion 1-1.5 page}
+	\begin{table}[h!]
+		\centering
+		\begin{tabular}{ | c | c | c | }
+			\hline
+			\multicolumn{1}{ | p{2.5cm} | }{\centering \textbf{Response \\Time (sec)}} 
+				& \multicolumn{1}{ | p{2.5cm} | }{\centering \textbf{CV Error \\Rate (\%)}} 
+				& \multicolumn{1}{ | p{2.5cm} | }{\centering \textbf{Elapsed \\Time (sec)}}\\
+			\hline
+			0.5 & 4.97\% 	& 184.8\\
+			1 	& 1.72\% 	& 60.6\\
+			3 	& 0.66\% 	& 26\\
+			5 	& 0.87\% 	& 21.5\\
+			10 	& 0.81\% 	& 20.2\\
+			20 	& 0.34\% 	& 17.5\\
+			\hline
+		\end{tabular}
+		\caption[Affect of Response Time]{Affect of Response Time. CV Error Rate represents 20-fold cross-validation error rate on balanced training dataset. Elapsed time represents overall time to preprocess data, balance and fit classification model using SVM. } 
+		\label{table:responseTime}
+	\end{table}     
 	
-	\section{Conclusion 0.5 page}	
+	It can be seen from Table \ref{table:responseTime} that there is decreasing trend in error rate which was expected and matches with logic. However there is one exclusion, accuracy for response time of 3 seconds is better than for 5 or even 10 seconds. It can be explained by the fact that error rate is stochastic and true error rate for that response time should be somewhere in range between 0.87\% to 1.72\%. To summarize this comparison it can be proposed to use response time equals 1 or 3 seconds. However, further decrease hardly can be done in practice since aggregation in time window of 0.5 second significantly affect computational time and accuracy.
+	
+	One practical problem normally arises in area of failure pattern recognition. It is impossible to get all the failure data in advance: failures are not discovered yet or arriving very slowly as system is aimed to work without them. The straightforward way can be here is to wait for further failures and then retrain classifier incorporating arrived data. Of course, it is not advisory method in practice. Another way to cope with the problem is to use one-class SVM. This method was initially proposed by Scholkopf et al. \cite{scholkopf1999support}. The idea behind this method is to construct a representational model of normal training data. Then if newly arriving data are too different according to some measurements they labeled as out-of-class.
+	
+	To explore performance of one-class SVM provided data are preprocessed and aggregated in time window of 5 seconds as before. Training data consist of 80\% of observations from Normal 1 class, other normal classes were excluded as they were obtained under pressure conditions. Test data consist of the rest 20\% from Normal 1 class and all observations from failure classes. Kernel transformation is ANOVA RBF with vector of parameters $\alpha=\left(\sigma=1, d=1\right)$ 
+	
+	\begin{table}[h!]
+		\centering
+		\begin{tabular}{ l | c | c | c | c | }
+			\multicolumn{1}{ c | }{\textbf{}}
+				& \multicolumn{1}{ | c | }{\textbf{Normal 1}} 
+				& \multicolumn{1}{ | c | }{\centering \textbf{Failure 1}}
+				& \multicolumn{1}{ | c | }{\centering \textbf{Failure 2}}
+				& \multicolumn{1}{ | c | }{\centering \textbf{Failure 3}}\\
+			\hline
+			\textbf{Normal} 	& \textbf{35} 		& 3 			& 1				& 9\\
+			\textbf{Failure} 	& 12 				& \textbf{87} 	& \textbf{18}	& \textbf{81}\\
+			\hline
+		\end{tabular}
+		\caption[Confusion Matrix for One-Class SVM]{Confusion Matrix for One-Class SVM. Actual classes are arranged in columns, predicted classes in rows.} 
+		\label{table:confusionMatrixOneClassSVM}
+	\end{table}	
+	
+	It can be seen from Table \ref{table:confusionMatrixOneClassSVM} that even without knowing actual failures one-class SVM can recognize them with high level of confidence. The final accuracy rate for that model is 89.8\%. However about 25\% of observations from class Normal 1 were misclassified, in practice it means that there will be a lot of false alarms. In spite of that fact, majority of failure observations were classified correctly which highlights applicability of one-class SVM.
+	
+	\section{Results and Conclusion}
+	The first question that should be discussed is feasibility of results in practice. Of course, accuracy obtained in this analysis is extremely high. It can be explained by several reasons. First, crucial role here is purity of provided data. Data do not have outliers or missing values and can be even ``artificial'' since they were generated in test environment. Second, balancing techniques improve accuracy of predictions. Third, dimensionality reduction and feature selection as well as SVM tuning benefit results.
+	
+	This analysis does not pretend to be exhaustive therefore a variety of improvements can be done in order to improve results. First, feature extraction can be extended, for example, frequency-domain features can be used to capture physical concept of a signal. This approach was explored by Soleimani et al. \cite{soleimani2009fault} and brought positive results. Second, at early stages more detailed preprocessing step can be done, for example data normalizing. Third, one can propose to apply more sophisticated $k$-class sampling methods. Fourth, more advanced dimensionality reduction techniques, such as ICA or nonlinear modifications of PCA and ICA, as well as advanced feature selection methods, for example, Distance Evaluation Techniques, can be applied. Last improvement is to try different methods of SVM, such as $\nu$-SVM or $\epsilon$-SVM, and different approaches of multi class SVM adaptations, for example``One-Against-Other'' method.    	
 	
 	\bibliographystyle{plain}
 	\bibliography{References}
