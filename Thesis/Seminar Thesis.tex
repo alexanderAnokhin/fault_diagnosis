@@ -293,12 +293,41 @@ All experiments in this section utilize a non-optimized SVM classifier with the 
 
 \begin{description}
 \item[Binary Datasets]
-%TODO: [TABLE SAMPLE.1]
-A total of nine binary datasets are included in this initial resampling implementation experiment. Each dataset is a combination of one of the three failure types and one of the three normal types. The number of majority and minority instances along with the majority to minority ratio for each dataset are presented in table [TABLE SAMPLE.1]. All nine binary sampling methods described in the previous subsections are applied to these datasets. Furthermore, every method and dataset combination is repeated ten times, yielding 90 cross validation error rates for each sampling method.
+A total of nine binary datasets are included in this initial resampling implementation experiment. Each dataset is a combination of one of the three failure types and one of the three normal types. The number of majority and minority instances along with the majority to minority ratio for each dataset are presented in Table \ref{table:binaryratio}. All nine binary sampling methods described in the previous subsections are applied to these datasets. Furthermore, every method and dataset combination is repeated ten times, yielding 90 cross validation error rates for each sampling method.
+
+	\begin{table}[h!]
+		\centering
+		\begin{tabular}{ | l | l | l | l | l | }
+			\hline
+			\multicolumn{1}{ | c | }{\textbf{Maj. Class}}
+			& \multicolumn{1}{ | c | }{\textbf{Min. Class}}
+			& \multicolumn{1}{ | c | }{\textbf{Maj. Instances}}
+			& \multicolumn{1}{ | c | }{\textbf{Min. Instances}} 
+			& \multicolumn{1}{ | c | }{\textbf{Maj. : Min. Ratio}}\\
+			\hline
+			Normal 1	 & Failure 1 & 233 & 90 & $2.6:1$\\
+			Normal 1	 & Failure 2 & 233 & 19 & $12.3:1$\\
+			Normal 1	 & Failure 3 & 233 & 90 & $2.6:1$\\
+			Normal 2	 & Failure 1 & 252 & 90 & $2.8:1$\\
+			Normal 2	 & Failure 2 & 252 & 19 & $13.7:1$\\
+			Normal 2	 & Failure 3 & 252 & 90 & $2.8:1$\\
+			Normal 3	 & Failure 1 & 230 & 90 & $2.6:1$\\
+			Normal 3	 & Failure 2 & 230 & 19 & $12.1:1$\\
+			Normal 3	 & Failure 3 & 230 & 90 & $2.6:1$\\
+			\hline
+		\end{tabular}
+		\caption{Information on majority and minority classes, their number of instances, and the class ratios for the binary datasets} 
+		\label{table:binaryratio}
+	\end{table}	
 
 \item[Multi Class Dataset]
 %TODO: [EQUATION SAMPLE.1]
-Three failure types and three normal types are all put together into a unified dataset. This 6-class dataset is then subjected to four different training setups: one is directly using the dataset for training and the other three are balancing techniques. These balancing techniques are the two multi-class sampling methods, SMean and SMedian with random over- and under-sampling, and a simple class weighting scheme. For this weighting scheme each class is weighted according to its inverse proportion, which are then normalized so that all weights sum up to one, see equation [EQUATION SAMPLE.1]. Each of these four SVM training setups is repeated a hundred times. One hundred cross validation error rates for every setups are used for comparison.
+Three failure types and three normal types are all put together into a unified dataset. This 6-class dataset is then subjected to four different training setups: one is directly using the dataset for training and the other three are balancing techniques. These balancing techniques are the two multi-class sampling methods, SMean and SMedian with random over- and under-sampling, and a simple class weighting scheme. Equation \ref{eq:weight} describes this weighting scheme, where $c_{i}$ and $n_{i}$ are the weight and size of class $i$ respectively and $k$ is the number of classes. The weights are normalized so that they all sum up to one. Each of these four SVM training setups is repeated a hundred times. One hundred cross validation error rates for every setups are used for comparison.
+
+	\begin{equation} \label{eq:weight}
+	c_{i} = \frac{\sum_{i=1}^{k=6} n_{i}}{n_{i}} * (\sum_{i=1}^{k=6} \frac{\sum_{i=1}^{k=6} n_{i}}{n_{i}})^{-1}
+	\end{equation}
+
 \end{description}
 	
 	
