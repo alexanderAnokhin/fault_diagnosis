@@ -50,11 +50,11 @@
 									\> a\_anok01@uni-muenster.de\\
 									\\
 									\> Joshua Peter Handali\\
-									\> Street\\
-									\> Muenster zip-code\\
+									\> Steinfurter Str. 81, Zi. 103\\
+									\> Muenster 48149\\
 									\> Germany\\
-									\> Mobile Phone\\
-									\> j\_hand01@uni-muenster.de\\
+									\> +4915901002938\\
+									\> j\_hand02@uni-muenster.de\\
 			\\
 			Date of submission: 	\> \today\\
 		\end{tabbing}
@@ -295,33 +295,24 @@ All experiments in this section utilize a non-optimized SVM classifier with the 
 \item[Binary Datasets]
 A total of nine binary datasets are included in this initial resampling implementation experiment. Each dataset is a combination of one of the three failure types and one of the three normal types. The number of majority and minority instances along with the majority to minority ratio for each dataset are presented in Table \ref{table:binaryratio}. All nine binary sampling methods described in the previous subsections are applied to these datasets. Furthermore, every method and dataset combination is repeated ten times, yielding 90 cross validation error rates for each sampling method.
 
-	\begin{table}[h!]
+\begin{table}[h!]
 		\centering
-		\begin{tabular}{ | l | l | l | l | l | }
+		\begin{tabular}{ l | l | l | l |}
+			\multicolumn{1}{ c | }{\textbf{}}
+				& \multicolumn{1}{ | c | }{\textbf{Fail. 1}} 
+				& \multicolumn{1}{ | c | }{\centering \textbf{Fail. 2}}
+				& \multicolumn{1}{ | c | }{\centering \textbf{Fail. 3}}\\
 			\hline
-			\multicolumn{1}{ | c | }{\textbf{Maj. Class}}
-			& \multicolumn{1}{ | c | }{\textbf{Min. Class}}
-			& \multicolumn{1}{ | c | }{\textbf{Maj. Instances}}
-			& \multicolumn{1}{ | c | }{\textbf{Min. Instances}} 
-			& \multicolumn{1}{ | c | }{\textbf{Maj. : Min. Ratio}}\\
-			\hline
-			Normal 1	 & Failure 1 & 233 & 90 & $2.6:1$\\
-			Normal 1	 & Failure 2 & 233 & 19 & $12.3:1$\\
-			Normal 1	 & Failure 3 & 233 & 90 & $2.6:1$\\
-			Normal 2	 & Failure 1 & 252 & 90 & $2.8:1$\\
-			Normal 2	 & Failure 2 & 252 & 19 & $13.7:1$\\
-			Normal 2	 & Failure 3 & 252 & 90 & $2.8:1$\\
-			Normal 3	 & Failure 1 & 230 & 90 & $2.6:1$\\
-			Normal 3	 & Failure 2 & 230 & 19 & $12.1:1$\\
-			Normal 3	 & Failure 3 & 230 & 90 & $2.6:1$\\
+			\textbf{Norm. 1} & 2.6:1 				& 2.8:1 			& 2.6:1\\			
+			\textbf{Norm. 2} & 12.3:1 				& 13.7:1 		& 12.1:1\\			
+			\textbf{Norm. 3} & 2.6:1 				& 2.8:1 			& 2.6:1\\				
 			\hline
 		\end{tabular}
-		\caption{Information on majority and minority classes, their number of instances, and the class ratios for the binary datasets} 
+		\caption[Class Ratios of the Binary Datasets]{Class ratios of the binary datasets (Normal:Failure)} 
 		\label{table:binaryratio}
 	\end{table}	
 
 \item[Multi Class Dataset]
-%TODO: [EQUATION SAMPLE.1]
 Three failure types and three normal types are all put together into a unified dataset. This 6-class dataset is then subjected to four different training setups: one is directly using the dataset for training and the other three are balancing techniques. These balancing techniques are the two multi-class sampling methods, SMean and SMedian with random over- and under-sampling, and a simple class weighting scheme. Equation \ref{eq:weight} describes this weighting scheme, where $c_{i}$ and $n_{i}$ are the weight and size of class $i$ respectively and $k$ is the number of classes. The weights are normalized so that they all sum up to one. Each of these four SVM training setups is repeated a hundred times. One hundred cross validation error rates for every setups are used for comparison.
 
 	\begin{equation} \label{eq:weight}
@@ -350,25 +341,25 @@ Both experiments are analyzed with the same approach. It involves visual inspect
 	
 	\begin{table}[h!]
 		\centering
-		\begin{tabular}{ | l | l | l | l | l | l | l | l | l | l |}
+		\begin{tabular}{ | l | l | }
 			\hline
 			\multicolumn{1}{ | c | }{\textbf{Method}} 
-				& \multicolumn{1}{ | c | }{\textbf{ros}}
-				& \multicolumn{1}{ | c | }{\textbf{smo50}}
-				& \multicolumn{1}{ | c | }{\textbf{smoD}}
-				& \multicolumn{1}{ | c | }{\textbf{rus}}
-				& \multicolumn{1}{ | c | }{\textbf{oss}}
-				& \multicolumn{1}{ | c | }{\textbf{cnn}}
-				& \multicolumn{1}{ | c | }{\textbf{enn}}
-				& \multicolumn{1}{ | c | }{\textbf{ncl}} 	
-				& \multicolumn{1}{ | c | }{\textbf{tom}}\\
+				& \multicolumn{1}{ | c | }{\textbf{$p$-value}}\\
 			\hline
-			\textbf{\textit{p}-value} & $1.4*10^{-12}$ & 0.009 & $6.6*10^{-11}$ & 0.318 & $3.3*10^{-5}$ & 0.048 & 0.999 & 0.594 & 0.697\\
+			Random Oversampling (ros) 				& $1.4*10^{-12}$\\
+			SMOTE with 100\% Oversampling Rate (smo50) 	& 0.009\\
+			SMOTE with 200\% Oversampling Rate (smoD) 				& $6.6*10^{-11}$\\
+			Random Undersampling (rus) 	& 0.318\\
+			One-Sided Sampling (oss) 		& $3.3*10^{-5}$\\
+			Condensed Nearest Neighbour (cnn) 			& 0.048\\
+			Edited Nearest Neighbour (enn)			& 0.999\\
+			Neighbourhood Cleaning Rule (ncl) 			& 0.594\\
+			Tomek link (tom) 			& 0.697\\
 			\hline
 		\end{tabular}
-		\caption{Reported p-value from Nemenyi test for the performances of nine sampling methods compared to training on the original binary datasets.} 
+		\caption[Statistical Significance of Sampling Methods for Binary Datasets]{Reported p-value from Nemenyi test for the performances of nine sampling methods compared to training on the original binary datasets.} 
 		\label{table:binarytest}
-	\end{table}
+	\end{table}	
 	
 	\begin{table}[h!]
 		\centering
@@ -379,7 +370,7 @@ Both experiments are analyzed with the same approach. It involves visual inspect
 				\textbf{smedian} 	& $< 2*10^{-16}$ & 0.96 & -\\ \hline
 				\textbf{weighted} 	& $	1.9*10^{-7}$ & $2.7*10^{-13}$ & $5.7*10^{-14}$\\ \hline
 			\end{tabular}
-		\caption{Reported p-value from Nemenyi test for the performances of three balancing methods compared to training on the original multi class dataset (none).} 
+		\caption[Statistical Significance of Sampling Methods for Binary Datasets]{Reported p-value from Nemenyi test for the performances of three balancing methods compared to training on the original multi class dataset (none).} 
 		\label{table:multitest}
 	\end{table}
 	
