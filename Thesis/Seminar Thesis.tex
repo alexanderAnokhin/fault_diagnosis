@@ -253,48 +253,45 @@
 	\label{samplingMethods}
 	There are eight different sampling methods plus a variant of one of those methods for the binary experiment. The original articles for each algorithms are cited accordingly, although this paper used their implementations available in the \textit{unbalanced}\footnote{https://cran.r-project.org/web/packages/unbalanced/unbalanced.pdf} package on R. The algorithm multi class sampling method, however, is directly implemented according to its source article while still utilizing a couple basic sampling algorithms from the previously mentioned R package.
 	\\\\
-	\textbf{Binary Sampling Methods}
-	\begin{description}
-	\item[Random Oversampling (ros)]
+	\textbf{Binary Sampling Methods}. Nine sampling methods for binary datasets consisting one oversampling method, six undersampling method, and 2 variants of a hybrid sampling method:
+	\begin{itemize}
+	\item{Random Oversampling (ros)}:
 	Random replication of minority instances until the minority class is inflated to the size of majority class.
 	
-	\item[Random Undersampling (rus)]
+	\item{Random Undersampling (rus)}:
 	Random removal of majority instances until the majority class is reduced to the size of minority class.
 	
-	\item[Condensed Nearest Neighbour (cnn)]
+	\item{Condensed Nearest Neighbour (cnn)}:
 	Hart's condensed nearest neighbour (CNN) rule \cite{cnn} selects a subset of majority instances. This subset needs to correctly classify instances of the original majority class using the 1-nearest neighbour rule.
 	
-	\item[Edited Nearest Neighbour (enn)]
+	\item{Edited Nearest Neighbour (enn)}:
 	Wilson's edited nearest neighbour (ENN) rule \cite{enn} removes majority instances that differ from the majority of its 3-nearest neighbours.
 	
-	\item[One-Sided Sampling (oss)]
+	\item{One-Sided Sampling (oss)}:
 	One-Sided Sampling (OSS) \cite{oss} is a combination of CNN and Tomek links. A majority class subset is created by using CNN. Majority instances in this subset which participates in Tomek links are removed.
 	
-	\item[Neighbourhood Cleaning Rule (ncl)]
+	\item{Neighbourhood Cleaning Rule (ncl)}:
 	Neighbourhood cleaning rule (NCL) \cite{ncl} applies an ENN variant and removes two subsets of majority instances. Firstly, Majority instances misclassified by their 3-nearest neighbours are removed. Secondly, it removes majority instances belonging to the 3-nearest-neighbours of minority instances.
 	
-	\item[Tomek link (tom)]
+	\item{Tomek link (tom)}:
 	Tomek links \cite{tomek} are pairs of different classed instances which are also each other's nearest neighbour. Majority instances which are Tomek links are removed.
 	
-	\item[Synthetic Minority Oversampling Technique (smoD and smo50)]
+	\item{Synthetic Minority Oversampling Technique (smoD and smo50)}:
 	Synthetic Minority Oversampling Technique (SMOTE) \cite{smote} creates new minority instances by interpolating feature values between minority instances and one or more of its 5 minority class nearest neighbours. This oversampling procedure through SMOTE is followed by undersampling the majority class. The resampling procedure is done by randomly sample with replacement a certain number of majority instances to be included into the new training set. Consequently, there are parameters which indicate the oversampling and undersampling rates. The default values are 200\% for both resampling rates. It means two new minority instances are generated for every original minority instances and two majority instances are randomly included into the resampled training set for every new minority instances. A simple tweak to oversampling rate leads to two different variants implemented in this paper.
 	
 	The first variant (smoD) is the one with default rates, which makes the minority class three times its original size and the majority class 1.33 times of the new minority class size. Note that because the undersampling rate doesn't take into account the original majority class' size, it may inflate the majority class size. This occurs when the size of majority class is smaller than four times the size of minority class, which was the case for some of the binary datasets being worked on.
 	
 	The second variant (smo50) is set up with two purposes, to create a 50:50 class ratio and to avoid increasing the size of majority class. Hence, the oversampling rate is set to 100\%, while the undersampling rate is left at 200\%, as the majority to minority ratio in the binary datasets are all larger than 2:1.
-	\end{description}
-	
-	\begin{description}
-	\item[Multi Class Sampling Methods]
+	\end{itemize}
+		
+	\textbf{Multi Class Sampling Methods}.
 	Two fairly straightforward methods to balance out sizes of multiple classes in one dataset are adapted from \cite{multisampling}, namely Standard Mean (SMean) and Standard Median (SMedian). Both methods create a multi class dataset with equal class sizes. In order to decide this final class size SMean takes the arithmetic mean of all class sizes, while SMedian takes the median class size of those classes. If a class is larger than the final class size it would be randomly undersampled, otherwise random oversampling is applied to that class.
-	\end{description}
 			
 	\subsection{Experimental Setups}
-	All experiments in this section utilize a non-optimized SVM classifier with the Radial Basis Kernel. Furthermore, a 20-fold cross validation is performed on the training data to provide an evaluation measure which is the cross validation error rate.
+	All experiments in this section utilize a non-optimized SVM classifier with the Radial Basis Kernel. Furthermore, a 20-fold cross validation is performed on the training data to provide an evaluation measure which is the cross validation error rate.\\
 	
-	\begin{description}
-	\item[Binary Datasets]
-	A total of nine binary datasets are included in this initial resampling implementation experiment. Each dataset is a combination of one of the three failure types and one of the three normal types. The number of majority and minority instances along with the majority to minority ratio for each dataset are presented in Table \ref{table:binaryratio}. All nine binary sampling methods described in the previous subsections are applied to these datasets. Furthermore, every method and dataset combination is repeated ten times, yielding 90 cross validation error rates for each sampling method.
+	\textbf{Binary Datasets}.
+	A total of nine binary datasets are included in this initial resampling implementation experiment. Each dataset is a combination of one of the three failure types and one of the three normal types. The number of majority and minority instances along with the majority to minority ratio for each dataset are presented in Table \ref{table:binaryratio}. All nine binary sampling methods described in the previous subsections are applied to these datasets. Furthermore, every method and dataset combination is repeated ten times, yielding 90 cross validation error rates for each sampling method.\\
 
 \begin{table}[h!]
 		\centering
@@ -313,17 +310,15 @@
 		\label{table:binaryratio}
 	\end{table}	
 
-\item[Multi Class Dataset]
+\textbf{Multi Class Dataset}.
 Three failure types and three normal types are all put together into a unified dataset. This 6-class dataset is then subjected to four different training setups: one is directly using the dataset for training and the other three are balancing techniques. These balancing techniques are the two multi-class sampling methods, SMean and SMedian with random over- and under-sampling, and a simple class weighting scheme. Equation \ref{eq:weight} describes this weighting scheme, where $c_{i}$ and $n_{i}$ are the weight and size of class $i$ respectively and $k$ is the number of classes. The weights are normalized so that they all sum up to one. Each of these four SVM training setups is repeated a hundred times. One hundred cross validation error rates for every setups are used for comparison.
 
 	\begin{equation} \label{eq:weight}
 	c_{i} = \frac{\sum_{i=1}^{k=6} n_{i}}{n_{i}} * (\sum_{i=1}^{k=6} \frac{\sum_{i=1}^{k=6} n_{i}}{n_{i}})^{-1}
 	\end{equation}
-
-\end{description}
-		
+	
 		\subsection{Experimental Result Analysis}		
-	Both experiments are analyzed with the same approach. It involves visual inspection of each sampling method's cross validation error rates distributions through boxplot visualization and 	statistical tests to compare the methods performance with each other. The Friedman test and post-hoc Nemenyi test are employed as suggested by \cite{compare}. These statistical tests are intended to tell if there are any significance difference between how each method ranks within the same iteration, and across nine different datasets in the binary problem. Boxplots for the binary and multi class experiments are shown in Figure \ref{fig:binarybox} and Figure \ref{fig:multibox} respectively. As Friedman tests on both experiment indicate statistical significance, important parts of the post-hoc Nemenyi tests are presented in Table \ref{table:binarytest} and Table \ref{table:multitest} for the binary and multi class experiments respectively.
+	Both experiments are analyzed with the same approach. It involves visual inspection of each sampling method's cross validation error rates distributions through boxplot visualization and 	statistical tests to compare the methods performance with each other. The Friedman test and post-hoc Nemenyi test are employed as suggested by \cite{compare}. These statistical tests are intended to tell if there are any significance difference between how each method ranks within the same iteration, and across nine different datasets in the binary problem. Boxplots for the binary and multi class experiments are shown in Figure \ref{fig:binarybox} and Figure \ref{fig:multibox} respectively. As Friedman tests on both experiment indicate statistical significance, important parts of the post-hoc Nemenyi tests are presented in Table \ref{table:binarytest} and Table \ref{table:multitest} for the binary and multi class experiments respectively.\\
 	
 		\begin{figure}[h!]
 			\centering
@@ -374,10 +369,11 @@ Three failure types and three normal types are all put together into a unified d
 			\label{table:multitest}
 		\end{table}
 		
-	\begin{description}
-	\item[Binary Datasets] Table \ref{table:binarytest} suggests that all three oversampling based methods, the random oversampling and two SMOTE variants, performed significantly better that training without data balancing. However, Figure \ref{fig:binarybox} provides further insight about the cross validation error rate distributions between those three sampling methods. Both random oversampling and the default SMOTE implementation (smoD) seem to have minimal overlap with training results on imbalanced datasets. Furthermore, the SMOTE variant which enforces majority class shrinkage (smo50) appears to vary more. A suggested cause here is that in 'smoD' there are cases where the majority class are actually randomly oversampled instead of undersampled, potentially avoiding information loss from the undersampling step of SMOTE. The major take-away here is that in this particular case of data imbalance inflating the size of minority classes, which are the failure patterns, may lead to significance improvement of SVM performance in terms of having low error rate. Undersampling, however, seems to cause important information loss of normal patterns.   
-	\item[Multi Class Dataset] Taking a look at Table \ref{table:multitest}, all four scenarios appear to be significantly different except when comparing the two sampling methods SMean and SMedian. Moreover, by consulting Figure \ref{fig:multibox}, all three data balancing approaches produced improved performances with sampling methods out performing the naive weighting scheme. As a definite sampling method is needed for the next section, a rather conservative choice of using SMean is taken. While both methods performed practically the same in terms of error rate, SMean provides a slightly smaller class size of 153 instances compared to SMedian's 160 and maintains roughly the same dataset size to that of the original's.
-	\end{description}
+	\textbf{Binary Datasets}.
+	Table \ref{table:binarytest} suggests that all three oversampling based methods, the random oversampling and two SMOTE variants, performed significantly better that training without data balancing. However, Figure \ref{fig:binarybox} provides further insight about the cross validation error rate distributions between those three sampling methods. Both random oversampling and the default SMOTE implementation (smoD) seem to have minimal overlap with training results on imbalanced datasets. Furthermore, the SMOTE variant which enforces majority class shrinkage (smo50) appears to vary more. A suggested cause here is that in 'smoD' there are cases where the majority class are actually randomly oversampled instead of undersampled, potentially avoiding information loss from the undersampling step of SMOTE. The major take-away here is that in this particular case of data imbalance inflating the size of minority classes, which are the failure patterns, may lead to significance improvement of SVM performance in terms of having low error rate. Undersampling, however, seems to cause important information loss of normal patterns.\\
+	
+	\textbf{Multi Class Dataset}.
+	Taking a look at Table \ref{table:multitest}, all four scenarios appear to be significantly different except when comparing the two sampling methods SMean and SMedian. Moreover, by consulting Figure \ref{fig:multibox}, all three data balancing approaches produced improved performances with sampling methods out performing the naive weighting scheme. As a definite sampling method is needed for the next section, a rather conservative choice of using SMean is taken. While both methods performed practically the same in terms of error rate, SMean provides a slightly smaller class size of 153 instances compared to SMedian's 160 and maintains roughly the same dataset size to that of the original's.
 
 	
 	\section{SVM Classifier}
