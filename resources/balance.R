@@ -202,6 +202,8 @@ ubOSSx <- function (X, Y, verbose = T)
   id.C <- sample(id.C)
   C.X <- X[id.C, ]
   C.Y <- Y[id.C]
+  ## original line: data <- ubTomek(X, Y, verbose)
+  ## the revised version feeds the new dataset C.X and C.Y into ubTomek instead of the original one
   data <- ubTomek(C.X, C.Y, verbose)
   X <- data$X
   Y <- data$Y
