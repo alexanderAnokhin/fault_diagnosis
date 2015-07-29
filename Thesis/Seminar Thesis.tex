@@ -6,6 +6,7 @@
 \usepackage{makeidx}
 \usepackage{graphicx}
 \usepackage{subcaption}
+\usepackage{tabulary}
 
 \makeatletter
 \setlength{\@fptop}{0pt}
@@ -237,64 +238,32 @@
 	\section{Data Balancing}	
 	\subsection{Sampling Methods}
 	\label{samplingMethods}
-	There are eight different sampling methods plus a variant of one of those methods for the binary experiment. The original articles for each algorithms are cited accordingly, although this paper used their implementations available in the \textit{unbalanced}\footnote{https://cran.r-project.org/web/packages/unbalanced/unbalanced.pdf} package on R. The algorithm multi class sampling method, however, is directly implemented according to its source article while still utilizing a couple basic sampling algorithms from the previously mentioned R package.
-	\\\\
-	\textbf{Binary Sampling Methods}. Nine sampling methods for binary datasets consisting one oversampling method, six undersampling method, and 2 variants of a hybrid sampling method as presented in Table \ref{table:binarymethod}.
+	There are eight different sampling methods plus a variant of one of those methods for the binary experiment. The original articles for each algorithms are cited accordingly, although this paper used their implementations available in the \textit{unbalanced}\footnote{https://cran.r-project.org/web/packages/unbalanced/unbalanced.pdf} package on R. The algorithm multi class sampling method, however, is directly implemented according to its source article while still utilizing a couple basic sampling algorithms from the previously mentioned R package.\\
 	
+	\textbf{Binary Sampling Methods}. Nine sampling methods for binary datasets consisting one oversampling method, six undersampling method, and 2 variants of a hybrid sampling method. Short descriptions of the methods are presented in Table \ref{table:binarymethod}. For the oversampling method random oversampling is chosen. Meanwhile, the six undersampling methods are: random undersampling, Condensed Nearest Neighbour (CNN) \cite{cnn}, Edited Nearest Neighbour (ENN) \cite{enn}, One-Sided Sampling (OSS) \cite{oss}, Neighbourhood Cleaning Rule (NCL) \cite{ncl}, Tomek link \cite{tomek}. Synthetic Minority Oversampling Technique (SMOTE) becomes the representative for hybrid methods.
+		
+	Further remarks regarding Tomek link, OSS, and SMOTE are as follows. Tomek link are pairs of instances with different classes which are each other's nearest neighbour. As for OSS implementation, a small change to the original function \textit{ubOSS} from the \textit{unbalanced} packaged was made to ensure the step by step approach of applying CNN followed by Tomek links removal. Finally, SMOTE creates new minority instances by interpolating feature values between minority instances and one or more of its 5 minority class nearest neighbours. This oversampling procedure is followed by undersampling the majority class, indicating the existence of adjustable oversampling and undersampling rates. For example, setting 200\% on both resampling rates means two new minority instances are generated for every original minority instances and two majority instances are randomly included into the resampled training set for every new minority instances. In this paper SMOTE A and SMOTE B differ only in their oversampling rates with both variants have an undersampling rate of 200\%. SMOTE A ensures a 50:50 class ratio and majority class reduction as the majority to minority ratio in the binary datasets are all larger than 2:1. SMOTE B has the default rate, which may lead to inflating instead of deflating the majority class. This occurs when the size of majority class is smaller than four times the size of minority class, which was the case for some of the binary datasets at hand.\\
+		
 	\begin{table}[h!]
 		\centering
-		\begin{tabular}{ | l | c | c | c | }
+			\begin{tabulary}{1\linewidth}{| L | l | L |}
 			\hline
-			\multicolumn{1}{ | c | }{\textbf{Name}} 
-				& \multicolumn{1}{ | c | }{\textbf{Codename}}
-				& \multicolumn{1}{ | c | }{\textbf{Type}} 
-				& \multicolumn{1}{ | c | }{\textbf{Description}}\\
+			\textbf{Name} & \textbf{Codename} & \textbf{Description}	\\
 			\hline
-			Random Oversampling								& (ros) 		&\\
-			SMOTE \cite{smote} with 100\% Oversampling Rate	& (smo50) 	& 0.009\\
-			SMOTE with 200\% Oversampling Rate				& (smoD) 				& $6.6*10^{-11}$\\
-			Random Undersampling								& (rus) 	& 0.318\\
-			One-Sided Sampling \cite{oss}					& (oss) 		& $3.3*10^{-5}$\\
-			Condensed Nearest Neighbour \cite{cnn}			& (cnn) 			& 0.048\\
-			Edited Nearest Neighbour \cite{enn}				& (enn)			& 0.999\\
-			Neighbourhood Cleaning Rule	\cite{ncl}			& (ncl) 			& 0.594\\
-			Tomek link \cite{tomek}							& (tom) 			& 0.697\\
-			\hline
-		\end{tabular}
-		\caption[Binary Sampling Methods]{Binary Sampling Methods. Method names are followed by their codenames referred to Figure \ref{fig:binarybox} and Figure \ref{fig:multibox}. The sampling approach (oversampling, undersampling, or hybrid) are listed along their short descriptions.} 
+			Random Oversampling	& ros 	& Randomly replicating minority instances to reach 50:50 class ratio.\\ \hline
+			SMOTE A				& smo50 	& SMOTE with 100\% oversampling rate.\\ \hline
+			SMOTE B				& smoD 	& SMOTE with 200\% oversampling rate.\\ \hline
+			Random Undersampling	& rus 	& Randomly removing majority instances to reach 50:50 class ratio.\\ \hline
+			CNN					& cnn 	& Selects a subset of majority class that correctly classify the original majority class with 1-nearest neighbour rule.\\ \hline
+			ENN					& enn	& Removes majority instances that differ from the majority of its 3-nearest neighbours.\\ \hline
+			OSS					& oss	& Application of a modified CNN followed by removing majority instances participating in Tomek links.\\ \hline
+			NCL					& ncl 	&  Removes majority instances different to their 3-nearest neighbours and the ones belonging to the 3-nearest-neighbours of minority instances.\\ \hline
+			Tomek link			& tom 	& Majority instances which are Tomek links are removed.\\ \hline
+			\end{tabulary}
+		\caption[Binary Sampling Methods]{Binary Sampling Methods. Method names are followed by their codenames referred in Figure \ref{fig:binarybox} and Figure \ref{fig:multibox}, which are then followed by their descriptions.} 
 		\label{table:binarymethod}
 	\end{table}
 	
-	\begin{itemize}
-	\item{Random Oversampling (ros)}:
-	Random replication of minority instances until the minority class is inflated to the size of majority class.
-	
-	\item{Random Undersampling (rus)}:
-	Random removal of majority instances until the majority class is reduced to the size of minority class.
-	
-	\item{Condensed Nearest Neighbour (cnn)}:
-	Hart's condensed nearest neighbour (CNN) rule \cite{cnn} selects a subset of majority instances. This subset needs to correctly classify instances of the original majority class using the 1-nearest neighbour rule.
-	
-	\item{Edited Nearest Neighbour (enn)}:
-	Wilson's edited nearest neighbour (ENN) rule \cite{enn} removes majority instances that differ from the majority of its 3-nearest neighbours.
-	
-	\item{One-Sided Sampling (oss)}:
-	One-Sided Sampling (OSS) \cite{oss} is a combination of CNN and Tomek links. A majority class subset is created by using CNN. Majority instances in this subset which participates in Tomek links are removed.
-	
-	\item{Neighbourhood Cleaning Rule (ncl)}:
-	Neighbourhood cleaning rule (NCL) \cite{ncl} applies an ENN variant and removes two subsets of majority instances. Firstly, Majority instances misclassified by their 3-nearest neighbours are removed. Secondly, it removes majority instances belonging to the 3-nearest-neighbours of minority instances.
-	
-	\item{Tomek link (tom)}:
-	Tomek links \cite{tomek} are pairs of different classed instances which are also each other's nearest neighbour. Majority instances which are Tomek links are removed.
-	
-	\item{Synthetic Minority Oversampling Technique (smoD and smo50)}:
-	Synthetic Minority Oversampling Technique (SMOTE) \cite{smote} creates new minority instances by interpolating feature values between minority instances and one or more of its 5 minority class nearest neighbours. This oversampling procedure through SMOTE is followed by undersampling the majority class. The resampling procedure is done by randomly sample with replacement a certain number of majority instances to be included into the new training set. Consequently, there are parameters which indicate the oversampling and undersampling rates. The default values are 200\% for both resampling rates. It means two new minority instances are generated for every original minority instances and two majority instances are randomly included into the resampled training set for every new minority instances. A simple tweak to oversampling rate leads to two different variants implemented in this paper.
-	
-	The first variant (smoD) is the one with default rates, which makes the minority class three times its original size and the majority class 1.33 times of the new minority class size. Note that because the undersampling rate doesn't take into account the original majority class' size, it may inflate the majority class size. This occurs when the size of majority class is smaller than four times the size of minority class, which was the case for some of the binary datasets being worked on.
-	
-	The second variant (smo50) is set up with two purposes, to create a 50:50 class ratio and to avoid increasing the size of majority class. Hence, the oversampling rate is set to 100\%, while the undersampling rate is left at 200\%, as the majority to minority ratio in the binary datasets are all larger than 2:1.
-	\end{itemize}
-		
 	\textbf{Multi Class Sampling Methods}.
 	Two fairly straightforward methods to balance out sizes of multiple classes in one dataset are adapted from \cite{multisampling}, namely Standard Mean (SMean) and Standard Median (SMedian). Both methods create a multi class dataset with equal class sizes. In order to decide this final class size SMean takes the arithmetic mean of all class sizes, while SMedian takes the median class size of those classes. If a class is larger than the final class size it would be randomly undersampled, otherwise random oversampling is applied to that class.
 			
@@ -352,15 +321,15 @@ Three failure types and three normal types are all put together into a unified d
 			\multicolumn{1}{ | c | }{\textbf{Method}} 
 				& \multicolumn{1}{ | c | }{\textbf{$p$-value}}\\
 			\hline
-			Random Oversampling (ros) 				& $1.4*10^{-12}$\\
-			SMOTE with 100\% Oversampling Rate (smo50) 	& 0.009\\
-			SMOTE with 200\% Oversampling Rate (smoD) 				& $6.6*10^{-11}$\\
-			Random Undersampling (rus) 	& 0.318\\
-			One-Sided Sampling (oss) 		& $3.3*10^{-5}$\\
-			Condensed Nearest Neighbour (cnn) 			& 0.048\\
-			Edited Nearest Neighbour (enn)			& 0.999\\
-			Neighbourhood Cleaning Rule (ncl) 			& 0.594\\
-			Tomek link (tom) 			& 0.697\\
+			Random Oversampling (ros)			& $1.4*10^{-12}$\\
+			SMOTE with A (smo50)		 			& 0.009\\
+			SMOTE with B (smoD) 					& $6.6*10^{-11}$\\
+			Random Undersampling (rus)		 	& 0.318\\
+			One-Sided Sampling (oss) 			& $3.3*10^{-5}$\\
+			Condensed Nearest Neighbour (cnn)	& 0.048\\
+			Edited Nearest Neighbour (enn)		& 0.999\\
+			Neighbourhood Cleaning Rule (ncl)	& 0.594\\
+			Tomek link (tom) 					& 0.697\\
 			\hline
 		\end{tabular}
 		\caption[Statistical Significance of Sampling Methods for Binary Datasets]{Reported p-value from Nemenyi test for the performances of nine sampling methods compared to training on the original binary datasets.} 
