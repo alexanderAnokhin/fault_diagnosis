@@ -23,7 +23,7 @@ source("resources/balance.R")
 ## Set number of folds for cross-validation
 folds <- 20
 
-## Part 2----
+## Binary Experiments----
 ## Fit SVM with default settings on pairs of scenarios, then balance 
 ## data and compare results (choose best balance technique)
 ##
@@ -290,7 +290,7 @@ q
 
 #fm.rank <- apply(fm.comp, 2, min_rank)
 
-## Part 3----
+## Multi Class Experiments----
 ## Fit SVM with default settings on all classes, then balance/weight
 ## data and compare results (choose best balance technique)
 ##
@@ -329,14 +329,6 @@ multi.svm <- sapply(1:100, function(x) {
                       , kernel='rbfdot'
                       , cross = folds)
   
-  ## SMOTE
-  f.smote <- SMOTE(form = fault~., faults[, -c(1,2)])
-  res$smote <- ksvm(x=as.matrix(f.smote[, -22])
-                    , y=f.smote$fault
-                    , type="C-svc"
-                    , kernel='rbfdot'
-                    , cross = folds)
-  
   ## Naive weights
   res$weighted <- ksvm(x=as.matrix(faults[, -c(1, 2, 24)])
                        , y=faults$fault
@@ -358,21 +350,14 @@ multi.cross.melt <- melt(multi.cross.comp)
 colnames(multi.cross.melt) <- c('method', 'iteration', 'value')
 kruskal.test(multi.cross.melt$value, multi.cross.melt$method)
 dunn.test(multi.cross.melt$value, multi.cross.melt$method, method = 'bonferroni')
-posthoc.friedman.nemenyi.test(t(multi.cross.comp[-4, ]))
+posthoc.friedman.nemenyi.test(t(multi.cross.comp))
 z <- ggplot(multi.cross.melt, aes(x = method, y = value)) + geom_boxplot(aes(fill = method))
 z <- z + xlab("Method") + ylab("Cross-Validation Error") + ggtitle("Sampling Methods Comparison for K-class SVMs")
 z <- z + theme(plot.title=element_text(size=28, face="bold"), text=element_text(size=28))
 z
 
-## without SMOTE
-wSmote <- filter(multi.cross.melt, method != 'smote')
-y <- ggplot(wSmote, aes(x = method, y = value)) + geom_boxplot(aes(fill = method))
-y <- y + xlab("Method") + ylab("Cross-Validation Error") + ggtitle("Sampling Methods Comparison for Multi Class SVMs")
-y <- y + theme(plot.title=element_text(size=28, face="bold"), text=element_text(size=28))
-y
-
 # rank
-multi.rank <- apply(multi.cross.comp[-4, ], 2, min_rank)
+multi.rank <- apply(multi.cross.comp, 2, min_rank)
 multi.rank.melt <- melt(t(multi.rank))
 colnames(multi.rank.melt) <- c('i', 'method', 'rank')
 w <- ggplot(multi.rank.melt, aes(x = method, y = rank)) + geom_boxplot(aes(fill = method))
