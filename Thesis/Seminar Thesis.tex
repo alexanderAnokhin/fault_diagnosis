@@ -253,7 +253,32 @@
 	\label{samplingMethods}
 	There are eight different sampling methods plus a variant of one of those methods for the binary experiment. The original articles for each algorithms are cited accordingly, although this paper used their implementations available in the \textit{unbalanced}\footnote{https://cran.r-project.org/web/packages/unbalanced/unbalanced.pdf} package on R. The algorithm multi class sampling method, however, is directly implemented according to its source article while still utilizing a couple basic sampling algorithms from the previously mentioned R package.
 	\\\\
-	\textbf{Binary Sampling Methods}. Nine sampling methods for binary datasets consisting one oversampling method, six undersampling method, and 2 variants of a hybrid sampling method:
+	\textbf{Binary Sampling Methods}. Nine sampling methods for binary datasets consisting one oversampling method, six undersampling method, and 2 variants of a hybrid sampling method as presented in Table \ref{table:binarymethod}.
+	
+	\begin{table}[h!]
+		\centering
+		\begin{tabular}{ | l | c | c | c | }
+			\hline
+			\multicolumn{1}{ | c | }{\textbf{Name}} 
+				& \multicolumn{1}{ | c | }{\textbf{Codename}}
+				& \multicolumn{1}{ | c | }{\textbf{Type}} 
+				& \multicolumn{1}{ | c | }{\textbf{Description}}\\
+			\hline
+			Random Oversampling								& (ros) 		&\\
+			SMOTE \cite{smote} with 100\% Oversampling Rate	& (smo50) 	& 0.009\\
+			SMOTE with 200\% Oversampling Rate				& (smoD) 				& $6.6*10^{-11}$\\
+			Random Undersampling								& (rus) 	& 0.318\\
+			One-Sided Sampling \cite{oss}					& (oss) 		& $3.3*10^{-5}$\\
+			Condensed Nearest Neighbour \cite{cnn}			& (cnn) 			& 0.048\\
+			Edited Nearest Neighbour \cite{enn}				& (enn)			& 0.999\\
+			Neighbourhood Cleaning Rule	\cite{ncl}			& (ncl) 			& 0.594\\
+			Tomek link \cite{tomek}							& (tom) 			& 0.697\\
+			\hline
+		\end{tabular}
+		\caption[Binary Sampling Methods]{Binary Sampling Methods. Method names are followed by their codenames referred to Figure \ref{fig:binarybox} and Figure \ref{fig:multibox}. The sampling approach (oversampling, undersampling, or hybrid) are listed along their short descriptions.} 
+		\label{table:binarymethod}
+	\end{table}
+	
 	\begin{itemize}
 	\item{Random Oversampling (ros)}:
 	Random replication of minority instances until the minority class is inflated to the size of majority class.
@@ -358,14 +383,13 @@ Three failure types and three normal types are all put together into a unified d
 		
 		\begin{table}[h!]
 			\centering
-			\begin{tabular}{ | l | l | l | l |}
-					\hline
+			\begin{tabular}{ l | l | l | l |}
 					  			& \textbf{none} 	& \textbf{smean} 	& \textbf{smedian}\\ \hline
 					\textbf{smean} 	& $< 2*10^{-16}$ & -	& -\\ \hline
 					\textbf{smedian} 	& $< 2*10^{-16}$ & 0.96 & -\\ \hline
 					\textbf{weighted} 	& $	1.9*10^{-7}$ & $2.7*10^{-13}$ & $5.7*10^{-14}$\\ \hline
 				\end{tabular}
-			\caption{Reported p-value from Nemenyi test for the performances of three balancing methods compared to training on the original multi class dataset (none).} 
+			\caption{Reported $p$-values from Nemenyi test for the performances of three balancing methods compared to training on the original multi class dataset (none).} 
 			\label{table:multitest}
 		\end{table}
 		
