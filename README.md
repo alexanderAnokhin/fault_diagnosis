@@ -12,3 +12,14 @@ Initial data are taken from Learnweb and transformed. The trasformed data compri
 4. "cycle" - corresponding cycle.
 
 Each sensor collects 2048 values every second (every 1/2048 second one value). In each cycle data is collected for around 46 seconds.
+
+##Repository Structure
+1. Thesis/ - folder with final thesis written with use of Latex 
+2. data/ - folder with initial data for analysis
+3. images/ - folder with images of analysis
+4. resources/ - addition R scripts for analysis
+5. exploratoryAnalysis.R - script with exploratory part of analysis 
+6. analysisPart1.R - script with balancing part of analysis
+7. analysisPart2.R - script with SVM part os analysis
+
+In order to reproduce full analysis scripts exploratoryAnalysis.R, analysisPart1.R and analysisPart2.R  should be sourced in turn.
