@@ -106,7 +106,7 @@
 	\section*{Introduction}
 	\label{introduction}
 	\addcontentsline{toc}{section}{Introduction}
-	A successful failure pattern recognition system can go a long way in improving spare parts management in terms of allowing a good maintenance plan. Fault detection manifests itself as a part of condition based maintenance (CBM) \cite{McKee2014}. Failure pattern recognition maybe done not only to differentiate between failure and normal operation signals, but also to distinguish between different failure patterns. Identifying patterns benefits in early failure detection and investigation of root cause of failure. Meanwhile, distinguishing different failure patterns may lead to effective fault management action plans, as failures can then be accurately located. These opportunities lead to efforts on automatic failure pattern recognition, one of which can be done by applying classification algorithms such as Support Vector Machine (SVM).
+	A successful failure pattern recognition system can go a long way in improving spare parts management in terms of allowing a good maintenance plan. Fault detection manifests itself as a part of Condition Based Maintenance (CBM) \cite{McKee2014}. Failure pattern recognition is aimed not only to differentiate between failure and normal operation signals, but also to distinguish between different failure patterns. Identifying patterns benefits in early failure detection and investigation of root cause of failure. Meanwhile, distinguishing different failure patterns may lead to effective fault management action plans, as failures can then be accurately located. These opportunities lead to efforts on automatic failure pattern recognition, one of which can be done by applying classification algorithms such as Support Vector Machine (SVM).
 	
 	SVM is a relatively new computational learning method based on the statistical learning theory. Exhaustive overviews of SVM applicability in pattern recognition \cite{Lee2002} and fault diagnosis \cite{Widodo20072560} clearly show that SVM is a versatile and efficient technique for such problems. The concept of SVM is based on Vapnik-Chervonenkis theory \cite{cortes1995support, vapnik1995nature} that recently emerged as a general mathematical framework for estimating (learning) dependencies from finite samples \cite[p. 2561]{Widodo20072560}. The idea of SVM is to separate feature space by constructing linear boundary with the biggest margin between two classes. Moreover initial feature space can be enlarged with help of kernel transformations.
 		
@@ -114,15 +114,15 @@
 	
 	An aspect of pattern recognition task typically needs to be addressed is the class imbalance problem. It occurs where one or more classes heavily outnumber other classes. This is usually the case when putting patterns from normal operations and failure occurrences together, which also presents in datasets available for this paper. Comprehensive reviews on this matter are available in literatures \cite{Lopez2013113, Garcia2009} providing approaches to solve it. Sampling method is one of those approaches. It looks to train the classifier on a resampled dataset which involves reducing the size of majority classes and / or increasing the size of minority classes. Although sampling methods for binary classification tasks are more common, multi class sampling methods can also be found in researches \cite{multisampling, Yao2012}.
 	
-	Despite its robustness, SVMs are still susceptible to a degradation of performance when applied in imbalanced datasets \cite{Sun2009}. With that knowledge, basic sampling methods are pursued to explore their effects on this specific failure pattern recognition task using SVMs. Error rate are compared to investigate which sampling methods, if any, may improve the classification performance.  
+	Despite its robustness, SVMs are still susceptible to a degradation of performance when applied in imbalanced datasets \cite{Sun2009}. With that knowledge, basic sampling methods are pursued to explore their effects on this specific failure pattern recognition task using SVMs. Error rate is compared to investigate which sampling methods, if any, may improve the classification performance.  
 	
 	The first section of a paper describes underlying problem, research methodology and provided experimental data. Section 2 explores data preparation step which involves preprocessing the raw data and exploratory analysis. The analysis work starts with data balancing experiments in Section 3. This section covers both binary and multi class datasets. Section 4 provides a step-by-step SVM model building process, ranging from choice of kernel up to final model and further improvements. Additionally, dimensionality reduction and feature selection steps are also included in this section. Finally, Section 5 summarizes results of the analysis and outlines possibilities for future researches.   
 	
 	\section{Problem Description}
 	\subsection{Research Methodology}
-	Aim of analysis is to build a classifier, based on initially collected data, to detect failures. Such a diagnosis can highly benefit company in real life, since failures identified at early stage, future costly faults possibly prevented. The aim defines a number of research questions. First of all, it is unclear how the initially proposed data can be properly preprocessed. Moreover, since classes are possibly imbalanced another question is how they can be balanced and should they be balanced at all. Since feature extraction and selection as well as SVM parametrization are highly effect final results it will be also valuable to answer the question about optimal building procedure and parameters. Another question is how accuracy and efficiency of a classifier can vary along different settings, for example size of initial sample. 
+	Aim of analysis is to build a classifier, based on initially collected data, to detect failures. Such a diagnosis can highly benefit company in real life, since failures identified at early stage, future costly faults possibly prevented. The aim defines a number of research questions. First, it is unclear how the initially proposed data can be properly preprocessed. Second, since classes are possibly imbalanced another question is how they can be balanced and should they be balanced at all. Third, feature extraction and selection as well as SVM parametrization highly effect final results it will be also valuable to answer the question about optimal building procedure and parameters. Last question is how accuracy and efficiency of a classifier can vary along different settings, for example size of initial sample. 
 	
-	To accomplish the aim of a study research design is mainly based on optimization and simulation experiments, however literature research is also used in two ways: establishing a proper direction of analysis; identification of existing methods and approaches for further use. Analysis was conducted with help of R programming language\footnote{http://www.r-project.org/} which is used for statistical computing and graphics. Collaboration between authors is supported by usage of GitHub\footnote{https://github.com/}. The whole analysis is fully reproducible and can be redone by sourcing scripts from public GitHub repository\footnote{https://github.com/alexanderAnokhin/fault\_diagnosis}.    
+	To accomplish the aim of a study research design is mainly based on optimization and simulation experiments, however literature research is also used in two ways: establishing a proper direction of analysis; identification of existing methods and approaches for further usage. Analysis is conducted with help of R programming language\footnote{http://www.r-project.org/} which is used for statistical computing and graphics. Collaboration between authors is supported by usage of GitHub\footnote{https://github.com/}. The whole analysis is fully reproducible and can be redone by sourcing scripts from public GitHub repository\footnote{https://github.com/alexanderAnokhin/fault\_diagnosis}.    
 	
 	\subsection{Data Description}
 	The initial data is provided by a Brazilian manufacturer. The company produces different kinds of	electric actuators to drive control values. Data are generated in a test environment under normal and overload conditions. Three sensors are installed near the
@@ -135,9 +135,9 @@
 		\begin{tabular}{ | l | l | c | c | }
 			\hline
 			\multicolumn{1}{ | c | }{\textbf{Class}} 
-				& \multicolumn{1}{ | c | }{\textbf{Description}}
-				& \multicolumn{1}{ | c | }{\textbf{Cycles}} 	
-				& \multicolumn{1}{ | c | }{\textbf{Observations}}\\
+				& \multicolumn{1}{ c | }{\textbf{Description}}
+				& \multicolumn{1}{ c | }{\textbf{Cycles}} 	
+				& \multicolumn{1}{ c | }{\textbf{Observations}}\\
 			\hline
 			Normal 1 	& Cycle without load on actuator 			& 25 		& $2398*10^3$\\
 			Normal 2 	& Cycle with pressure equal 3.0 bar 		& 25 		& $2572*10^3$\\
@@ -157,7 +157,7 @@
 	\subsection{Data Preprocessing}
 	To achieve appropriate performance and classification results data preprocessing step should be done beforehand. The aim of data preprocessing from one side is to reduce the noise in the data and from another side retain as much information as possible. Typically data preprocessing also requires feature extraction step where a set of reasonable features extracted from raw signals.
 	
-	Generated data contain no missing data or obvious outliers which makes preprocessing step very straightforward. However one issue that affected performance at early stages is discovered. Every cycle has steady states in the beginning and in the end where signal does not change over about one second. That obviously distracts classifier since steady signal can be misclassified as failure which lead to full stop. To avoid such scenarios every second in a cycle is divided into 16 time windows and then for all of them standard deviation is calculated. In result if standard deviation is less than 5\% quantile for a whole cycle then signal during that period of time is considered as stable and related observations removed from further consideration. This procedure results in accurate removing steady states from every cycle preserving the general structure of a signal behavior.
+	Generated data contain no missing data or obvious outliers which makes preprocessing step very straightforward. However one issue that affected performance at early stages is discovered. Every cycle has steady states in the beginning and in the end where signal does not change over about one second. That obviously distracts classifier since steady signal can be misclassified as failure which lead to full stop. To avoid such scenarios every second in a cycle is divided into 16 time windows and then for all of them standard deviation is calculated. In result if standard deviation for a certain time window is less than 5\% quantile for a whole cycle then signal during that period of time is considered as stable and related observations removed from further consideration. This procedure results in accurate removing steady states from every cycle while preserving the general structure of a signal behavior.
 		
 	Feature extraction step for vibration signal has been already widely explored in literature. Samanta \cite{Samanta2004625} during this step extracted time domain features in order to identify gear faults. That approach was later improved by Soleimani et al. \cite{soleimani2009fault}, vibration was considered not just as time varying but also as a physical signal, thus time domain and frequency domain features were extracted. In this analysis, based on existing research conducted by Soleimani et al. \cite[p. 2]{soleimani2009fault}, vibration signal is considered in time interval of 5 seconds where time domain features are extracted. Table \ref{table:extractedFeatures} presents extracted time domain features.
 	
@@ -166,7 +166,7 @@
 		\begin{tabular}{ | l | l | }
 			\hline
 			\multicolumn{1}{ | c | }{\textbf{Feature}} 
-				& \multicolumn{1}{ | c | }{\textbf{Formula}}\\
+				& \multicolumn{1}{ c | }{\textbf{Formula}}\\
 			\hline
 			mean 				& $T_1=\frac{1}{N}\sum_{i=1}^{N}x_i$\\
 			standard deviation 	& $T_2=(\frac{1}{N}\sum_{i=1}^{N}(x_i-T_1)^2)^{0.5}$\\
@@ -181,7 +181,7 @@
 		\label{table:extractedFeatures}
 	\end{table}	
 	
-	After data preprocessing and feature extraction size of data was significantly reduced even without feature selection step. Final training sample consist of about 920 observations in total that makes possible to apply SVM in order to classify gear failures. Every observation  consists of 21 features: 7 extracted features for every sensor signal, and  response variable which shows existence of failure.
+	After data preprocessing and feature extraction, size of data was significantly reduced even without feature selection step. Final training sample consist of about 920 observations in total that makes possible to apply SVM in order to classify gear failures. Every observation  consists of 21 features: 7 extracted features for every sensor signal, and  response variable which shows existence of failure.
 	
 	\subsection{Exploratory Analysis}
 	\label{exploratoryAnalysis}
@@ -216,7 +216,7 @@
 		\caption[Correlation Matrices]{Correlation Matrices. 1 - mean; 2 - standard deviation; 3 - peak; 4 - root mean square; 5, 6, 7 - standard deviations for sensors 1, 2, 3 respectively.}		
 	\end{table}
 		
-	It was outlined before that SVM approach tries to find distinguishing hyperplane between two classes therefore during exploratory analysis it is also valuable to explore how separable observations from different classes. Figure \ref{fig:visualInspection} shows that some classes can be accurately separated using only two features. However it is not the common case for two-dimensional space where some classes have a lot of overlap. For example, classes with normal conditions are hardly separable in two-dimensional space. Of course, using more than two features can lead to accurate separation but it cannot be properly visualize. 
+	It was outlined before that SVM approach tries to find distinguishing hyperplane between two classes therefore during exploratory analysis it is also valuable to explore how separable observations from different classes. Figure \ref{fig:visualInspection} shows that some classes can be accurately separated using only two features. However it is not the common case for two-dimensional space where some classes have a lot of overlap. For example, classes with normal conditions are hardly separable in two-dimensional space. Of course, using more than two features can lead to accurate separation but it cannot be properly visualized. 
 	
 	\begin{figure}[!h]
 		\begin{subfigure}{.5\textwidth}
@@ -273,16 +273,16 @@
 	\textbf{Binary Datasets}.
 	A total of nine binary datasets are included in this initial resampling implementation experiment. Each dataset is a combination of one of the three failure types and one of the three normal types. The number of majority and minority instances along with the majority to minority ratio for each dataset are presented in Table \ref{table:binaryratio}. All nine binary sampling methods described in the previous subsections are applied to these datasets. Furthermore, every method and dataset combination is repeated ten times, yielding 90 cross validation error rates for each sampling method.\\
 
-\begin{table}[h!]
+	\begin{table}[h!]
 		\centering
 		\begin{tabular}{ l | l | l | l |}
 			\multicolumn{1}{ c | }{\textbf{}}
-				& \multicolumn{1}{ | c | }{\textbf{Fail. 1}} 
-				& \multicolumn{1}{ | c | }{\centering \textbf{Fail. 2}}
-				& \multicolumn{1}{ | c | }{\centering \textbf{Fail. 3}}\\
+				& \multicolumn{1}{  c | }{\textbf{Fail. 1}} 
+				& \multicolumn{1}{  c | }{\centering \textbf{Fail. 2}}
+				& \multicolumn{1}{  c | }{\centering \textbf{Fail. 3}}\\
 			\hline
 			\textbf{Norm. 1} & 2.6:1 				& 2.8:1 			& 2.6:1\\			
-			\textbf{Norm. 2} & 12.3:1 				& 13.7:1 		& 12.1:1\\			
+			\textbf{Norm. 2} & 12.3:1 				& 13.7:1 			& 12.1:1\\			
 			\textbf{Norm. 3} & 2.6:1 				& 2.8:1 			& 2.6:1\\				
 			\hline
 		\end{tabular}
@@ -290,8 +290,8 @@
 		\label{table:binaryratio}
 	\end{table}	
 
-\textbf{Multi Class Dataset}.
-Three failure types and three normal types are all put together into a unified dataset. This 6-class dataset is then subjected to four different training setups: one is directly using the dataset for training and the other three are balancing techniques. These balancing techniques are the two multi-class sampling methods, SMean and SMedian with random over- and under-sampling, and a simple class weighting scheme. Equation \ref{eq:weight} describes this weighting scheme, where $c_{i}$ and $n_{i}$ are the weight and size of class $i$ respectively and $k$ is the number of classes. The weights are normalized so that they all sum up to one. Each of these four SVM training setups is repeated a hundred times. One hundred cross validation error rates for every setups are used for comparison.
+	\textbf{Multi Class Dataset}.
+	Three failure types and three normal types are all put together into a unified dataset. This 6-class dataset is then subjected to four different training setups: one is directly using the dataset for training and the other three are balancing techniques. These balancing techniques are the two multi-class sampling methods, SMean and SMedian with random over- and under-sampling, and a simple class weighting scheme. Equation \ref{eq:weight} describes this weighting scheme, where $c_{i}$ and $n_{i}$ are the weight and size of class $i$ respectively and $k$ is the number of classes. The weights are normalized so that they all sum up to one. Each of these four SVM training setups is repeated a hundred times. One hundred cross validation error rates for every setups are used for comparison.
 
 	\begin{equation} \label{eq:weight}
 	c_{i} = \frac{\sum_{i=1}^{k=6} n_{i}}{n_{i}} * (\sum_{i=1}^{k=6} \frac{\sum_{i=1}^{k=6} n_{i}}{n_{i}})^{-1}
@@ -319,11 +319,11 @@ Three failure types and three normal types are all put together into a unified d
 		\begin{tabular}{ | l | l | }
 			\hline
 			\multicolumn{1}{ | c | }{\textbf{Method}} 
-				& \multicolumn{1}{ | c | }{\textbf{$p$-value}}\\
+				& \multicolumn{1}{ c | }{\textbf{$p$-value}}\\
 			\hline
 			Random Oversampling (ros)			& $1.4*10^{-12}$\\
-			SMOTE with A (smo50)		 			& 0.009\\
-			SMOTE with B (smoD) 					& $6.6*10^{-11}$\\
+			SMOTE with A (smo50)		 		& 0.009\\
+			SMOTE with B (smoD) 				& $6.6*10^{-11}$\\
 			Random Undersampling (rus)		 	& 0.318\\
 			One-Sided Sampling (oss) 			& $3.3*10^{-5}$\\
 			Condensed Nearest Neighbour (cnn)	& 0.048\\
@@ -332,20 +332,20 @@ Three failure types and three normal types are all put together into a unified d
 			Tomek link (tom) 					& 0.697\\
 			\hline
 		\end{tabular}
-		\caption[Statistical Significance of Sampling Methods for Binary Datasets]{Reported p-value from Nemenyi test for the performances of nine sampling methods compared to training on the original binary datasets.} 
+		\caption[Statistical Significance of Sampling Methods for Binary Datasets]{Statistical Significance of Sampling Methods for Binary Datasets. Reported p-value from Nemenyi test for the performances of nine sampling methods compared to training on the original binary datasets.} 
 		\label{table:binarytest}
 		\end{table}	
 		
 		\begin{table}[h!]
 			\centering
-			\begin{tabular}{ l | l | l | l |}
+			\begin{tabular}{ l | l | l | l | }
 					  			& \textbf{none} 	& \textbf{smean} 	& \textbf{smedian}\\ \hline
 					\textbf{smean} 	& $< 2*10^{-16}$ & -	& -\\ \hline
 					\textbf{smedian} 	& $< 2*10^{-16}$ & 0.96 & -\\ \hline
 					\textbf{weighted} 	& $	1.9*10^{-7}$ & $2.7*10^{-13}$ & $5.7*10^{-14}$\\ \hline
 				\end{tabular}
-			\caption{Reported $p$-values from Nemenyi test for the performances of three balancing methods compared to training on the original multi class dataset (none).} 
-			\label{table:multitest}
+		\caption[Statistical Significance of Sampling Methods for Multi Class Datasets]{Statistical Significance of Sampling Methods for Multi Class Datasets. Reported $p$-values from Nemenyi test for the performances of three balancing methods compared to training on the original multi class dataset (none).} 
+		\label{table:multitest}
 		\end{table}
 		
 	\textbf{Binary Datasets}.
@@ -366,8 +366,8 @@ Three failure types and three normal types are all put together into a unified d
 		\begin{tabular}{ | l | c | c | }
 			\hline
 			\multicolumn{1}{ | c | }{\textbf{Kernel}} 
-				& \multicolumn{1}{ | c | }{\textbf{CV Error Rate (\%)}} 
-				& \multicolumn{1}{ | c | }{\textbf{Parameters}}\\
+				& \multicolumn{1}{ c | }{\textbf{CV Error Rate (\%)}} 
+				& \multicolumn{1}{ c | }{\textbf{Parameters}}\\
 			\hline
 			Linear 			& 1.96 & ---\\
 			Polynomial 		& 2.07 & $\left(d=1, \alpha=1, c=1\right)$\\
@@ -402,7 +402,7 @@ Three failure types and three normal types are all put together into a unified d
 		\label{fig:pcaEffect}
 	\end{figure}
 	
-	Another method to do feature selection, which is used in this analysis, is to iteratively fit classifiers for any reasonable number of principal components and track error rate over fits. Figure \ref{fig:pcaEffect} shows that PCA improves not only error rate, which was decreased from 1.42\% to 1.2\%, but also removes unnecessary information since in optimal case only 18 out of 21 principal components are used. It is also reasonable to mention how fast error rate degradates at early stages. Starting from roughly a half of all components - 11 principal components, error rate is lower than 2\% that makes predictions very accurate. 
+	Another method to do feature selection, which is used in this analysis, is to iteratively fit classifiers for any reasonable number of principal components and track error rate over fits. Figure \ref{fig:pcaEffect} shows that PCA improves not only error rate, which is decreased from 1.42\% to 1.2\%, but also removes unnecessary information since in optimal case only 18 out of 21 principal components are used. It is also reasonable to mention how fast error rate degradates at early stages. Starting from roughly a half of all components - 11 principal components, error rate is lower than 2\% that makes predictions very accurate. 
 		
 	\subsection{Multi Class SVM}
 	Initially SVM technique was proposed as a binary classifier. However in this analysis underlaying problem requires division between six classes: three normal and three failure ones. ``One to Others'' and ``One Against One'' modifications of SVM were proposed to deal with this limitation. In ``One to Others'' method there are basically two classes in each optimization process: one class and the others as the other class. The winner is defined as class with the maximum distance to decision boundary. ``One Against One'' approach uses $k(k - 1)/2$ classifiers for $k$-class problem. Here each classifier is trained on data from two classes. After training process winner class can be deduced using voting scheme.      
@@ -410,16 +410,16 @@ Three failure types and three normal types are all put together into a unified d
 	Instead of creating several binary classifiers, a more natural way is to distinguish
 	all classes in one single optimization process.	Initially Weston and Watkins proposed $k$-class SVM \cite{weston1998multi}. Further modification was proposed by Crammer and Singer \cite{crammer2001algorithmic}. These methods generalize optimization problem of binary case for $k$-classes, however final complexity impedes extensive use of these approaches in practice.
 	
-	So far in this analysis ``One Against One'' approach was used. Model consisted of 15 binary SVM classifiers and winer was deduced using voting procedure: class with the highest number of votes is a winner. However other approaches should be considered as well. Since ``One to Others'' approach can bring unbalance into already balanced training data it was excluded form consideration. Table \ref{table:multiSVM} represents comparison of different approaches.  
+	So far in this analysis ``One Against One'' approach was used. Model consisted of 15 binary SVM classifiers and winer was deduced using voting procedure: class with the highest number of votes is a winner. However other approaches should be considered as well. Since ``One to Others'' approach can bring unbalance into already balanced training data it is excluded form consideration. Table \ref{table:multiSVM} represents comparison of different approaches.  
 	
 	\begin{table}[h!]
 		\centering
 		\begin{tabular}{ | l | c | c | c | }
 			\hline
-			\multicolumn{1}{ | c | }{\textbf{Method}}
-				& \multicolumn{1}{ | p{2.5cm} | }{\textbf{Classifiers}} 
-				& \multicolumn{1}{ | p{2.5cm} | }{\centering \textbf{CV Error \\Rate (\%)}} 
-				& \multicolumn{1}{ | p{2.5cm} | }{\centering \textbf{Elapsed \\Time (sec)}}\\
+			\multicolumn{1}{ | c | }{\centering \textbf{Method}}
+				& \multicolumn{1}{ p{2.5cm} | }{\centering \textbf{Classifiers}} 
+				& \multicolumn{1}{ p{2.5cm} | }{\centering \textbf{CV Error \\Rate (\%)}} 
+				& \multicolumn{1}{ p{2.5cm} | }{\centering \textbf{Elapsed \\Time (sec)}}\\
 			\hline
 			``One Against One'' & 15 	& 1.2 	& 5.2\\
 			Crammer and Singer 	& 1 	& 2.28	& 6.1\\
@@ -430,7 +430,7 @@ Three failure types and three normal types are all put together into a unified d
 		\label{table:multiSVM}
 	\end{table}
 	
-	It can be seen from Table \ref{table:multiSVM} that multi class modifications do not benefit computational performance and final accuracy of classifier at all. Moreover error rate using Weston and Watkins multi class method is dramatically higher. It can be possibly explained by the fact of inappropriate parametrization, since default parameters were used in experiments. In addition, computational time for this method more than twice longer than time to build 15 standard binary SVM classifiers.	
+	It can be seen from Table \ref{table:multiSVM} that multi class modifications do not benefit computational performance and final accuracy of classifier at all. Moreover error rate using Weston and Watkins multi class method is dramatically higher. It can be possibly explained by the fact of inappropriate parametrization, since default parameters are used in experiments. In addition, computational time for this method more than twice longer than time to build 15 standard binary SVM classifiers.	
 	
 	\subsection{Parameter Optimization}
 	So far model was build under default parameters. More precisely, regularization strength parameter $C$ of SVM classifier equals 1 and ANOVA RBF kernel has a vector of parameters $\alpha=\left(\sigma=1, d=1\right)$. Of course, proper parametrization is an open problem in failure pattern recognition. It requires time and expensive computational resources, however accuracy can significantly benefit from such optimization. In area of machine fault diagnosis a variety of methods were proposed to cope with that problem: GAs, Particle Swarm Optimization (PSO) and Grid Search (GS).
@@ -446,21 +446,21 @@ Three failure types and three normal types are all put together into a unified d
 	
 	Figure \ref{fig:optimization} represents search procedure of optimal parameters. It can be seen that general trend is decreasing over iterations. In the end of optimization, final 20-fold	cross validation error decreased from 1.2\% to 0.87\%. The regularization strength parameter $C$ changed from 1 to 20.65 that basically means that decision margin of classifier become thinner. Parameters of kernel changed as well, initial vector $\alpha=\left(\sigma=1, d=1\right)$ moved to $\alpha'=\left(\sigma=0.77, d=1.03\right)$. However optimization process was very computationally exhaustive and took about 72.5 minutes for 25 iterations, in comparison one fit lasts only 5.5 seconds.
 	
-	Two remarks should be done here. First, found parameters are ``pseudo'' optimal since PSO is just a heuristic and does not provide global solutions. Second, estimated error rate is robust but can change, since division to folds in cross validation is stochastic. It can be fixed in two ways: increasing number of folds or setting up replication for evaluation of fitness. Replication means that error rate for a set of parameters will be calculated multiple times and then averaged. Both methods improve quality of optimization but increase complexity. 
+	Two remarks should be done here. First, found parameters are ``pseudo'' optimal since PSO is just a heuristic and does not provide global solutions. Second, estimated error rate is robust but can change, since division to folds in cross validation is stochastic. It can be fixed in two ways: increasing number of folds or setting up replication for evaluation of fitness. Replication means that error rate for a set of parameters will be calculated multiple times and then, for example, will be averaged. Both methods improve quality of optimization but increase complexity. 
 	
 	\subsection{Final Model and Further Modifications}
-	After all improvements and modifications final model incorporates ``One Against One'' approach as well as voting scheme to extend SVM for multi class problem. Therefore 15 standard ``$C$'' implementations of SVM with parameter $C=20.65$ are build to distinguish between each pair of classes. Kernel transformation for every binary classifier is ANOVA RBF with a vector of parameters $\alpha=\left(\sigma=0.77, d=1.03\right)$. Model is fitted on first 18 principal components extracted from initial data. Training data are balanced with use of ``Smean'' technique explored in Section \ref{samplingMethods}. Final 20-fold cross validation error rate equals 0.87\% which makes model very accurate.
+	After all improvements and modifications final model incorporates ``One Against One'' approach as well as voting scheme to extend SVM for multi class problem. Therefore 15 standard ``$C$'' implementations of SVM with parameter $C=20.65$ are build to distinguish between each pair of classes. Kernel transformation for every binary classifier is ANOVA RBF with a vector of parameters $\alpha=\left(\sigma=0.77, d=1.03\right)$. Model is fitted on first 18 principal components extracted from initial data. Training data are balanced with use of ``SMean'' technique explored in Section \ref{samplingMethods}. Final 20-fold cross validation error rate equals 0.87\% which makes model very accurate.
 	
 	\begin{table}[h!]
 		\centering
 		\begin{tabular}{ l | c | c | c | c | c | c | }
 			\multicolumn{1}{ c | }{\textbf{}}
-				& \multicolumn{1}{ | c | }{\textbf{Norm. 1}} 
-				& \multicolumn{1}{ | c | }{\centering \textbf{Norm. 2}}
-				& \multicolumn{1}{ | c | }{\centering \textbf{Norm. 3}}
-				& \multicolumn{1}{ | c | }{\centering \textbf{Fail. 1}}
-				& \multicolumn{1}{ | c | }{\centering \textbf{Fail. 2}} 
-				& \multicolumn{1}{ | c | }{\centering \textbf{Fail. 3}}\\
+				& \multicolumn{1}{ c | }{\textbf{Norm. 1}} 
+				& \multicolumn{1}{ c | }{\centering \textbf{Norm. 2}}
+				& \multicolumn{1}{ c | }{\centering \textbf{Norm. 3}}
+				& \multicolumn{1}{ c | }{\centering \textbf{Fail. 1}}
+				& \multicolumn{1}{ c | }{\centering \textbf{Fail. 2}} 
+				& \multicolumn{1}{ c | }{\centering \textbf{Fail. 3}}\\
 			\hline
 			\textbf{Norm. 1} & \textbf{229} 	& 0 			& 1				& 0 			& 0 			& 0\\
 			\textbf{Norm. 2} & 0 				& \textbf{249} 	& 1				& 0 			& 0 			& 0\\
@@ -474,7 +474,7 @@ Three failure types and three normal types are all put together into a unified d
 		\label{table:confusionMatrix}
 	\end{table}	
 	
-	Table \ref{table:confusionMatrix} shows final confusion matrix obtained testing model on initial unbalanced data. Overall accuracy of predictions is 99.1\% with error rate 0.9\% which is very close to obtained earlier cross validation error rate estimation of 0.87\%. It is reasonable to mention that none of observations from failure classes were misclassified, however some observations from normal classes were recognized as failures. There is also some overlap between normal classes. These results were expected and can be explained that during balancing normal classes were undersampled and failure classes oversampled therefore model already seen all observations from failure classes and only a portion of observations from normal classes.
+	Table \ref{table:confusionMatrix} shows final confusion matrix obtained testing model on initial unbalanced data. Overall accuracy of predictions is 99.1\% with error rate 0.9\% which is very close to obtained earlier cross validation error rate estimation of 0.87\%. It is reasonable to mention that none of observations from failure classes were misclassified, however some observations from normal classes are recognized as failures. There is also some overlap between normal classes. These results were expected and can be explained that during balancing normal classes were undersampled and failure classes oversampled therefore model already seen all observations from failure classes and only a portion of observations from normal classes.
 	
 	So far provided data were aggregated in time window of 5 seconds, it basically means what the answer for a question: ``Under which conditions does system operate now?'' can be answered in 5 seconds. However in some scenarios this response time is not enough. From one side, logically decrease of response time will negatively affect accuracy, since one observation is not that informative, but from the another side it will make model more sensitive to failures. Additionally, since time window is decreasing, size of training data is increasing and computational overhead may arise. These scenarios can be explored through simulation experiments using provided data. 
 	
@@ -483,8 +483,8 @@ Three failure types and three normal types are all put together into a unified d
 		\begin{tabular}{ | c | c | c | }
 			\hline
 			\multicolumn{1}{ | p{2.5cm} | }{\centering \textbf{Response \\Time (sec)}} 
-				& \multicolumn{1}{ | p{2.5cm} | }{\centering \textbf{CV Error \\Rate (\%)}} 
-				& \multicolumn{1}{ | p{2.5cm} | }{\centering \textbf{Elapsed \\Time (sec)}}\\
+				& \multicolumn{1}{ p{2.5cm} | }{\centering \textbf{CV Error \\Rate (\%)}} 
+				& \multicolumn{1}{ p{2.5cm} | }{\centering \textbf{Elapsed \\Time (sec)}}\\
 			\hline
 			0.5 & 4.97\% 	& 184.8\\
 			1 	& 1.72\% 	& 60.6\\
@@ -508,10 +508,10 @@ Three failure types and three normal types are all put together into a unified d
 		\centering
 		\begin{tabular}{ l | c | c | c | c | }
 			\multicolumn{1}{ c | }{\textbf{}}
-				& \multicolumn{1}{ | c | }{\textbf{Normal 1}} 
-				& \multicolumn{1}{ | c | }{\centering \textbf{Failure 1}}
-				& \multicolumn{1}{ | c | }{\centering \textbf{Failure 2}}
-				& \multicolumn{1}{ | c | }{\centering \textbf{Failure 3}}\\
+				& \multicolumn{1}{ c | }{\textbf{Normal 1}} 
+				& \multicolumn{1}{ c | }{\centering \textbf{Failure 1}}
+				& \multicolumn{1}{ c | }{\centering \textbf{Failure 2}}
+				& \multicolumn{1}{ c | }{\centering \textbf{Failure 3}}\\
 			\hline
 			\textbf{Normal} 	& \textbf{35} 		& 3 			& 1				& 9\\
 			\textbf{Failure} 	& 12 				& \textbf{87} 	& \textbf{18}	& \textbf{81}\\
@@ -526,7 +526,7 @@ Three failure types and three normal types are all put together into a unified d
 	\section{Results and Conclusion}
 	The first question that should be discussed here is feasibility of results. Final accuracy, obtained in this analysis, is extremely high and should be considered very cautiously. Good results can be explained by several reasons. First, crucial role here is purity of provided data. Data do not have outliers or missing values and can be even ``artificial'' since they were generated in test environment. Second, balancing techniques improve accuracy of predictions. Third, dimensionality reduction and feature selection as well as SVM tuning benefit results.
 	
-	During the analysis following fundings were explored. Removing steady states at data preprocessing stage improves further results. Aggregation of data in a certain time window is required and makes classification even possible. Also balancing mildly imbalanced data still can improve classification results. PCA slightly decreases needed amount of features and improves accuracy. This analysis shows that based on generated data ANOVA RBF transformation outperforms other kernels. Further optimization of classifier and kernel parameters can be done with help of PSO, but it is computationally expensive. Required response time can be decreased to 1 second, but it takes 3 times longer to train. From other hand, classifier, based on response time of 3 seconds, is slightly longer to build, but accuracy even better.      
+	During the analysis following fundings are explored. Removing steady states at data preprocessing stage improves further results. Aggregation of data in a certain time window is required and makes classification even possible. Also balancing mildly imbalanced data still can improve classification results. PCA slightly decreases needed amount of features and improves accuracy. This analysis shows that based on generated data ANOVA RBF transformation outperforms other kernels. Further optimization of classifier and kernel parameters can be done with help of PSO, but it is computationally expensive. Required response time can be decreased to 1 second, but it takes 3 times longer to train. From other hand, classifier, based on response time of 3 seconds, is slightly longer to build, but accuracy even better.      
 	
 	This analysis does not pretend to be exhaustive therefore a variety of improvements can be done in order to improve results. First, feature extraction can be extended, for example, frequency-domain features can be used to capture physical concept of a signal. This approach was explored by Soleimani et al. \cite{soleimani2009fault} and brought positive results. Second, at early stages more detailed preprocessing step can be done, for example data normalizing. Third, one can propose to apply more sophisticated $k$-class sampling methods. Fourth, more advanced dimensionality reduction techniques, such as ICA or nonlinear modifications of PCA and ICA, as well as advanced feature selection methods, for example, Distance Evaluation Techniques, can be applied. Another improvement is to try different methods of SVM, such as $\nu$-SVM or $\epsilon$-SVM, and different approaches of multi class SVM adaptations, for example``One-Against-Other'' method. One can also propose to analyze relative importance of features, in other words find small subset of untransformed features which can be used to separate classes. This can be used in order to understand the causality effects of vibration on failure states. One technique that can be applied here is Recursive Feature Elimination (RFE). RFE is aimed to get a ranked list of features. Features are sorted relatively to contribution of SVM accuracy and therefore top of them can be used to solve above task. This method was applied by Tian et al. \cite{Tian2015296} in steel plates failure pattern recognition.    	
 	
