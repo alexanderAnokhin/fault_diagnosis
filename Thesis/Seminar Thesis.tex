@@ -128,7 +128,7 @@
 	The initial data is provided by a Brazilian manufacturer. The company produces different kinds of	electric actuators to drive control values. Data are generated in a test environment under normal and overload conditions. Three sensors are installed near the
 	gears that are able to record the incurring vibration. The test environment represents electric motor with three attached sensors. Sensor 1 is located in the bearing of the main spindle, Sensor 2 on the motor's bearing and Sensor 3 depicts a built-in torque sensor.
 		
-	Tests perform valve aperture actions and are initiated under different conditions. New gears are	considered with and without additional load. In addition, failure data is obtained using worn and broken gears therefore provided data comprises six different settings with three types of failures. For every second is collected 2048 observations of signal. Each cycle lasts about 46-47 seconds. Table \ref{table:generatedData} summarizes generated data.
+	Tests perform valve aperture actions and are initiated under different conditions. New gears are	considered with and without additional load. In addition, failure data is obtained using worn and broken gears therefore provided data comprises six different settings with three types of failures. For every second 2048 observations of signal are collected. Each cycle lasts about 46-47 seconds. Table \ref{table:generatedData} summarizes generated data.
 	
 	\begin{table}[h!]
 		\centering
@@ -151,7 +151,7 @@
 		\label{table:generatedData}
 	\end{table}
 	
-	Table \ref{table:generatedData} outlines three important aspects of further analysis. First, provided data are imbalanced along classes. The most unbalance case is between Normal 2 and Failure 2 classes. The unbalance ratio here accounts for 75:1000. Second, generated data consist of about 10 millions observations in total which makes computationally impossible to use SVM directly. Third, slightly more emphasis in analysis is putted on comparison of Normal 1 and failure classes since they have been all obtained without load. That is premised in assumption of being able to measure load directly. Since load is measured we can explicitly exclude classes with or without load depending on estimated load. 
+	Table \ref{table:generatedData} outlines three important aspects of further analysis. First, provided data are imbalanced along classes. The most imbalanced case is between Normal 2 and Failure 2 classes. The imbalance ratio here accounts for 75:1000. Second, generated data consist of about 10 millions observations in total which makes computationally impossible to use SVM directly. Third, slightly more emphasis in analysis is putted on comparison of Normal 1 and failure classes since they have been all obtained without load. That is premised in assumption of being able to measure load directly. Since load is measured we can explicitly exclude classes with or without load depending on estimated load. 
 	
 	\section{Data Preparation}
 	\subsection{Data Preprocessing}
