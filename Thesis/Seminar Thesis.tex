@@ -47,14 +47,14 @@
 									\> Busso-Peus-Str. 14\\
 									\> Muenster 48149\\
 									\> Germany\\
-									\> +4917675615943\\
+									\> +49 176 75-615943\\
 									\> a\_anok01@uni-muenster.de\\
 									\\
 									\> Joshua Peter Handali\\
 									\> Steinfurter Str. 81\\
 									\> Muenster 48149\\
 									\> Germany\\
-									\> +4915901002938\\
+									\> +49 159 01-002938\\
 									\> j\_hand02@uni-muenster.de\\
 			\\
 			Date of submission: 	\> \today\\
@@ -106,7 +106,7 @@
 	\section*{Introduction}
 	\label{introduction}
 	\addcontentsline{toc}{section}{Introduction}
-	A successful failure pattern recognition system can go a long way in improving spare parts management in terms of allowing a good maintenance plan. Fault detection manifests itself as a part of Condition Based Maintenance (CBM) \cite{McKee2014}. Failure pattern recognition is aimed not only to differentiate between failure and normal operation signals, but also to distinguish between different failure patterns. Identifying patterns benefits in early failure detection and investigation of root cause of failure. Meanwhile, distinguishing different failure patterns may lead to effective fault management action plans, as failures can then be accurately located. These opportunities lead to efforts on automatic failure pattern recognition, one of which can be done by applying classification algorithms such as Support Vector Machine (SVM).
+	A successful failure pattern recognition system can go a long way in improving spare parts management in terms of allowing a good maintenance plan, fault detection manifests itself as a part of Condition Based Maintenance (CBM) \cite{McKee2014}. Failure pattern recognition is aimed not only to differentiate between failure and normal operation signals, but also to distinguish between different failure patterns. Identifying patterns benefits in early failure detection and investigation of root cause of failure. Meanwhile, distinguishing different failure patterns may lead to effective fault management action plans, as failures can then be accurately located. These opportunities lead to efforts on automatic failure pattern recognition, one of which can be done by applying classification algorithms such as Support Vector Machine (SVM).
 	
 	SVM is a relatively new computational learning method based on the statistical learning theory. Exhaustive overviews of SVM applicability in pattern recognition \cite{Lee2002} and fault diagnosis \cite{Widodo20072560} clearly show that SVM is a versatile and efficient technique for such problems. The concept of SVM is based on Vapnik-Chervonenkis theory \cite{cortes1995support, vapnik1995nature} that recently emerged as a general mathematical framework for estimating (learning) dependencies from finite samples \cite[p. 2561]{Widodo20072560}. The idea of SVM is to separate feature space by constructing linear boundary with the biggest margin between two classes. Moreover initial feature space can be enlarged with help of kernel transformations.
 		
@@ -157,7 +157,7 @@
 	\subsection{Data Preprocessing}
 	To achieve appropriate performance and classification results data preprocessing step should be done beforehand. The aim of data preprocessing from one side is to reduce the noise in the data and from another side retain as much information as possible. Typically data preprocessing also requires feature extraction step where a set of reasonable features extracted from raw signals.
 	
-	Generated data contain no missing data or obvious outliers which makes preprocessing step very straightforward. However one issue that affected performance at early stages is discovered. Every cycle has steady states in the beginning and in the end where signal does not change over about one second. That obviously distracts classifier since steady signal can be misclassified as failure which lead to full stop. To avoid such scenarios every second in a cycle is divided into 16 time windows and then for all of them standard deviation is calculated. In result if standard deviation for a certain time window is less than 5\% quantile for a whole cycle then signal during that period of time is considered as stable and related observations removed from further consideration. This procedure results in accurate removals of steady states from every cycle while preserving the general structure of a signal behavior.
+	Generated data contain no missing data or obvious outliers which makes preprocessing step very straightforward. However one issue that affected performance at early stages is discovered. Every cycle has steady states in the beginning and in the end where signal does not change over about one second. That obviously distracts classifier since steady signal can be misclassified as failure which lead to full stop. To avoid such scenarios every second in a cycle is divided into 16 time windows and then for all of them standard deviation is calculated. In result if standard deviation for a certain time window is less than 5\% quantile for a whole cycle then signal during that period of time is considered as stable and related observations removed from further consideration. This procedure results in accurate removals of steady states from every cycle while preserving the general structure of a signal behaviour.
 		
 	Feature extraction step for vibration signal has been already widely explored in literature. Samanta \cite{Samanta2004625} during this step extracted time domain features in order to identify gear faults. That approach was later improved by Soleimani et al. \cite{soleimani2009fault}, vibration was considered not just as time varying but also as a physical signal, thus time domain and frequency domain features were extracted. In this analysis, based on existing research conducted by Soleimani et al. \cite[p. 2]{soleimani2009fault}, vibration signal is considered in time interval of 5 seconds where time domain features are extracted. Table \ref{table:extractedFeatures} presents extracted time domain features.
 	
@@ -181,11 +181,11 @@
 		\label{table:extractedFeatures}
 	\end{table}	
 	
-	After data preprocessing and feature extraction, size of data was significantly reduced even without feature selection step. Final training sample consist of about 920 observations in total that makes possible to apply SVM in order to classify gear failures. Every observation  consists of 21 features: 7 extracted features for every sensor signal, and  response variable which shows existence of failure.
+	After data preprocessing and feature extraction, size of data is significantly reduced even without feature selection step. Final training sample consist of about 920 observations in total that makes possible to apply SVM in order to classify gear failures. Every observation  consists of 21 features: 7 extracted features for every sensor signal, and  response variable which shows existence of failure.
 	
 	\subsection{Exploratory Analysis}
 	\label{exploratoryAnalysis}
-	Another important step in order to build classifier is exploratory analysis. The aim of exploratory analysis is to understand data and check possible underlying assumptions required for analysis. It helps to find incentives for further steps and omit impossible scenarios which saves time and resources. SVM approach is very versatile and does nor require data to follow specific distribution that fact shortened exploratory step. 
+	Another important step in order to build classifier is exploratory analysis. The aim of exploratory analysis is to understand data and check possible underlying assumptions required for analysis. It helps to find incentives for further steps and omit impossible scenarios which saves time and resources. SVM approach is very versatile and does nor require data to follow specific distribution, that fact shortens exploratory step. 
 	
 	Since features are extracted from one signal there is a possibility that some of them are highly correlated and will create unnecessary computational overhead, during the process of training, without improvement of accuracy. It can be clearly seen from Table \ref{table:correlationMatricesOne} that features correlate along one sensor, for example, standard deviation of signal from Sensor 1 functionally determines root mean square for the same signal. In addition, features from different sensors correlate as well. Standard deviation of signal from Sensor 2 correlates with standard deviation of signal but from Sensor 3, which is shown at Table \ref{table:correlationMatricesAll}. These issues highlights the problem of dimensionality reduction which will be explored further in Section \ref{dimensionalityReduction}. 
 	
